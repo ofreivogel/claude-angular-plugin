@@ -51,34 +51,23 @@ This fork is additionally packaged as a [Claude Code](https://docs.claude.com/en
 - **Subagent**: `angular-developer` (Sonnet, preloads both skills, invokes `ng build` after generation)
 - **MCP server**: `angular-cli` via `ng mcp` (requires the Angular CLI on `PATH`)
 
-### Install
+### Prerequisites
 
-In a Claude Code session, add this repository as a plugin marketplace and install the plugin:
+The `angular-cli` MCP server requires the Angular CLI to be installed globally and resolvable on your `PATH`. Without it, the MCP server will fail to start.
+
+```bash
+npm install -g @angular/cli
+# verify with
+ng version
+```
+
+### Install
 
 ```bash
 /plugin marketplace add https://github.com/ofreivogel/claude-angular
-/plugin install angular@angular-skills
+/plugin install angular@olivers-angular-marketplace
 ```
 
-For local development, point the marketplace at a checkout instead:
 
-```bash
-/plugin marketplace add /path/to/claude-angular
-/plugin install angular@angular-skills
-```
-
-### Requirements
-
-- Angular CLI on `PATH` (`ng version` must succeed) for the MCP server to start.
-- Claude Code v2.1.x or newer.
-
-### Verify
-
-```bash
-claude plugin validate ./.claude-plugin/plugin.json
-claude plugin validate ./.claude-plugin/marketplace.json
-```
-
-After install, `claude --debug` shows the plugin load and MCP server initialization.
 
 <!-- END DOWNSTREAM: claude-code-plugin -->

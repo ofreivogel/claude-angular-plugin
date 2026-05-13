@@ -1,7 +1,7 @@
 ---
 name: angular-developer
 description: use proactively for any Angular work — components, services, directives, pipes, guards, resolvers, routing, and tests.
-tools: Bash, Read, Write, Edit, Glob, Grep, WebFetch, WebSearch, mcp__angular-cli__*
+tools: Bash, Read, Write, Edit, WebFetch, WebSearch
 skills: angular-developer
 ---
 
