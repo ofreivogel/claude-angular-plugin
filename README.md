@@ -14,7 +14,7 @@ Agent Skills are designed to be used with agentic coding tools like [Gemini CLI]
 To use these skills in your own environment you may follow the instructions for your specific tool or use a community tool like [skills.sh](https://skills.sh/).
 
 ```bash
-npx skills add https://github.com/angular/skills
+npx skills add https://github.com/ofreivogel/claude-angular
 ```
 
 ## Contributions
@@ -32,3 +32,53 @@ We also accept pull requests for new features, updates, or bug fixes for the ski
 1. Make your changes within the `skills/dev-skills/` directory.
 2. Follow the standard Angular [Commit Guidelines](https://github.com/angular/angular/blob/main/contributing-docs/commit-message-guidelines.md) and [Coding Standards](https://github.com/angular/angular/blob/main/contributing-docs/coding-standards.md).
 3. Submit a Pull Request to the main `angular/angular` repository.
+
+<!-- BEGIN DOWNSTREAM: claude-code-plugin -->
+<!--
+  Everything below this marker is a downstream addition specific to this fork
+  and is NOT part of the upstream angular/angular skills export. It documents
+  how to consume this repo as a Claude Code plugin. When syncing from upstream,
+  preserve this entire block; conflicts (if any) appear only here.
+-->
+
+## Use as a Claude Code plugin
+
+This fork is additionally packaged as a [Claude Code](https://docs.claude.com/en/docs/claude-code) plugin. It wraps the upstream skills together with a subagent and the Angular CLI MCP server (`ng mcp`). The wrapper lives in `.claude-plugin/`, `.mcp.json`, and `agents/` — these are added on top of the upstream content.
+
+### What the plugin provides
+
+- **Skills**: `angular-developer`, `angular-new-app` (from upstream, namespaced as `angular:angular-developer` etc.)
+- **Subagent**: `angular-developer` (Sonnet, preloads both skills, invokes `ng build` after generation)
+- **MCP server**: `angular-cli` via `ng mcp` (requires the Angular CLI on `PATH`)
+
+### Install
+
+In a Claude Code session, add this repository as a plugin marketplace and install the plugin:
+
+```bash
+/plugin marketplace add https://github.com/ofreivogel/claude-angular
+/plugin install angular@angular-skills
+```
+
+For local development, point the marketplace at a checkout instead:
+
+```bash
+/plugin marketplace add /path/to/claude-angular
+/plugin install angular@angular-skills
+```
+
+### Requirements
+
+- Angular CLI on `PATH` (`ng version` must succeed) for the MCP server to start.
+- Claude Code v2.1.x or newer.
+
+### Verify
+
+```bash
+claude plugin validate ./.claude-plugin/plugin.json
+claude plugin validate ./.claude-plugin/marketplace.json
+```
+
+After install, `claude --debug` shows the plugin load and MCP server initialization.
+
+<!-- END DOWNSTREAM: claude-code-plugin -->

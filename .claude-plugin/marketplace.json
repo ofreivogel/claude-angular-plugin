@@ -1,0 +1,14 @@
+{
+  "name": "angular-skills",
+  "description": "Angular development skills, subagent and CLI MCP server for Claude Code",
+  "owner": {
+    "name": "Oliver Freivogel"
+  },
+  "plugins": [
+    {
+      "name": "angular",
+      "description": "Angular development plugin with skills, subagent and Angular CLI MCP",
+      "source": "./"
+    }
+  ]
+}
