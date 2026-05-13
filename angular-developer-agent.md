@@ -1,6 +1,6 @@
 ---
 name: angular-developer
-description: use proactively for any Angular work — components, services, directives, pipes, guards, resolvers, routing, and tests.
+description: use proactively for analysing or modifying Angular related code, including components, services, directives, pipes, guards, resolvers, routing, stores, and tests.
 tools: Bash, Read, Write, Edit, WebFetch, WebSearch
 skills: angular-developer
 ---
