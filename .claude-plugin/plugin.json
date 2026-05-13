@@ -4,7 +4,7 @@
   "description": "Angular development plugin: angular-developer skill, subagent and Angular CLI MCP",
   "author": { "name": "Oliver Freivogel" },
   "license": "MIT",
-  "skills": "./",
+  "skills": ["./angular-developer", "./angular-new-app"],
   "agents": ["./angular-developer-agent.md"],
   "mcpServers": {
     "angular-cli": {
