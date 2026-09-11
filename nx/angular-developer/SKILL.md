@@ -1,6 +1,6 @@
 ---
 name: angular-developer
-description: For Nx workspaces only (an nx.json at the workspace root). Generates Angular code and provides architectural guidance. Trigger when creating projects, components, services, or HTTP communication, or for best practices on reactivity (signals, linkedSignal, resource, httpResource), forms, dependency injection, routing, SSR, accessibility (ARIA), animations, styling (component styles, Tailwind CSS), testing, naming conventions, or Nx tooling.
+description: For Nx workspaces only (an nx.json at the workspace root). Generates Angular code and provides architectural guidance. Trigger when creating components, services, or HTTP communication, or for best practices on reactivity (signals, linkedSignal, resource, httpResource), forms, dependency injection, routing, SSR, accessibility (ARIA), animations, styling (component styles, Tailwind CSS), testing, naming conventions, or Nx tooling.
 license: MIT
 metadata:
   author: Copyright 2026 Google LLC
@@ -13,28 +13,9 @@ metadata:
 
 1. Always analyze the project's Angular and Nx version before providing guidance, as best practices and available features vary significantly between versions. `nx report` lists the installed versions.
 
-2. When generating code, follow Angular's style guide and best practices for maintainability and performance. Use the Nx CLI for scaffolding components, services, directives, pipes, and routes to ensure consistency. Never use `ng` in an Nx workspace — Nx runs Angular's builders and schematics itself, and there is no `angular.json` for the Angular CLI to read.
+2. When generating code, follow Angular's style guide and best practices for maintainability and performance. Use Nx generators for scaffolding components, services, directives, pipes, and routes to ensure consistency. Never use `ng` in an Nx workspace — Nx runs Angular's builders and schematics itself, and there is no `angular.json` for the Angular CLI to read.
 
 3. Once you finish generating code, run the build to ensure there are no build errors: `nx build <project>`. If there are errors, analyze the error messages and fix them before proceeding. Do not skip this step, as it is critical for ensuring the generated code is correct and functional.
-
-## Creating Projects
-
-If no guidelines are provided by the user, here are some default rules to follow when creating a new Angular project:
-
-1. Use the latest stable version of Angular unless the user specifies otherwise.
-2. Use Signal Forms for form management in new projects (stable in Angular v22 and newer) [Find out more](references/signal-forms.md).
-
-**Inside an existing Nx workspace**, an "Angular project" is an application or library in that
-workspace, not a new workspace:
-
-```bash
-nx g @nx/angular:application apps/<name>
-nx g @nx/angular:library libs/<name>
-```
-
-**Creating a new workspace** is a separate step: `npx create-nx-workspace@latest <name>
---preset=angular-monorepo`. Do not use the Angular CLI to scaffold a workspace that is meant to
-be an Nx workspace.
 
 ## Generating Angular Code
 
@@ -172,6 +153,6 @@ Playwright's — cover setting it up and running it.
 
 ## Tooling
 
-When working with Angular tooling, consult the following references:
+When working with Angular tooling, consult the following reference:
 
 - **Environment Configuration**: Strategies for build-time and runtime configuration. Read [environment-configuration.md](references/environment-configuration.md)

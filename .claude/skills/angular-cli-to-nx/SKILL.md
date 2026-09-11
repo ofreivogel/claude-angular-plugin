@@ -1,181 +1,45 @@
 ---
-name: nx-sync
+name: angular-cli-to-nx
 description: Konvertiert für angular bereitgestellte skill basierend auf Angular CLI für nx workspaces.
-allowed-tools: Read, Write, Edit, Grep, Glob, WebFetch, Bash(git diff:*), Bash(git status:*), Bash(git log:*), Bash(cp:*), Bash(rm:*), Bash(git rm:*), Bash(find:*), Bash(grep:*), Bash(cmp:*), Bash(diff:*)
+allowed-tools: Read, Write, Edit, Grep, Glob, WebFetch, Bash
 ---
 
-# nx-sync
+## Verification sources nx
 
-Maintains `nx/` — the Nx fork of the upstream `angular-developer` skill — as reviewable repository content.
-
-**`nx/` is written by this skill, but it is not a build artifact.** It is committed, read and
-reviewed like any other file. Every change you make there must survive a human reading the diff.
-
-## Layout
-
-| Path | Role |
+| Key | URL |
 | :-- | :-- |
-| `angular-developer/` | Upstream, **never edit** |
-| `nx/angular-developer/` | The Nx fork: same files, Angular CLI translated to Nx |
-| `nx-rules.md` (next to this file) | How to translate. The only place that defines this |
+| `/introduction` | https://nx.dev/docs/technologies/angular/introduction |
+| `/generators` | https://nx.dev/docs/technologies/angular/generators |
+| `/executors` | https://nx.dev/docs/technologies/angular/executors |
+| `/create-workspace` | https://nx.dev/docs/reference/create-nx-workspace |
+| `generators.json` | https://raw.githubusercontent.com/nrwl/nx/master/packages/angular/generators.json |
+| `executors.json` | https://raw.githubusercontent.com/nrwl/nx/master/packages/angular/executors.json |
+| `/kb-tailwind` | https://nx.dev/docs/kb/using-tailwind-css-with-angular-projects |
 
-## Scope
+## Abgrenzung
 
 Translate Angular CLI specific only. Generic Nx knowledge — project graph, `affected`,
-caching, library architecture, module boundaries, generator discovery — is **out of scope**; it
-is covered by the Nx MCP server and the official Nx skills. The e2e test runners are out for the
-same reason: `@nx/playwright` and Playwright ship their own skills. Do not add such content, and
-do not let the fork grow beyond a translation of the upstream skill.
+caching, library architecture, module boundaries, generator discovery — is **out of scope**
 
-Five things are deliberately **not** forked, and a sync must not reintroduce them. **Part C** of
-nx-rules.md states each one with what must not be lost along with it:
+skip content concerning:
+- set up new application and libaries, 
+- e2e-testing
+- migrations
 
-- the `angular-new-app` skill (C1) — workspace creation is `create-nx-workspace`, generic Nx
-  territory. The Nx plugin ships only `angular-developer`.
-- `references/cli.md` (C2) — translated it would describe `nx g`, `nx build`, `nx serve` and
-  `nx test`, which the Nx skills already cover. Its Angular-specific remainder lives in the
-  *Generating Angular Code* section of the skill's `SKILL.md`.
-- `references/mcp.md` (C3) — the Nx MCP server, its setup and its tools are Nx's own territory.
-- `references/migrations.md` (C4) — version updates are `nx migrate`, an Nx flow. Angular's
-  code-modernization schematics went with it by decision; nothing is carried over.
-- `references/e2e-testing.md` (C5) — e2e is the runner's territory; `@nx/playwright` and
-  Playwright ship their own skills. What stays is one sentence in `SKILL.md` saying so and
-  naming `--e2eTestRunner` as where the choice is made.
 
 ## Procedure
 
-**A note on the commands below.** Bash permissions match the command *prefix*, so every command
-here is written to start with one of the prefixes in `allowed-tools`. A wrapper — `LAST=$(git log
-…)`, or a `| wc -l` on the end — falls outside the list and prompts mid-run. Read a value with
-the Read tool and substitute it into the command literally.
+1. Wenn nicht angegeben, Frage welcher skill transformiert werden soll
+2. Kopiere den Inhalt des orginal skill nach nx
+3. suche nach allen Angular CLI betroffenen Abschnitte im Skill file und den dazugehörigen Dateien wie Referenzen etc
+4. Arbeite alle Abschnitte durch: Ersetzte angular CLI spezifische Befehle und Anweisungen mit passenden nx/angular befehlen. Entferne Inhalte die abgegrenzt sind. Verifiziere jede Änderung gegen die aktuelle API und Dokumentation des nx angular Plugin. (siehe [#Verification sources nx])
+5. Prüfe deine Änderungen gegenüber der vorangehenden Version. Was nicht  angular CLI spezifisch ist sollte erhalten bleiben, wenn es "upstream" vorhanden ist.
+6. verwende /code-review und behebe die Findings.
+7. Stoppe ohne commit
 
-### 1. Establish the starting point
+Bsp für anpassungen 
 
-Report what changed upstream since the last sync, so the work is bounded:
-
-```
-git log --oneline -10 -- angular-developer
-```
-
-Establish a baseline commit, then diff upstream against it — **not** against `HEAD`. Right after
-a committed upstream merge the working tree is clean, so `git diff HEAD` reports nothing in
-exactly the situation this skill exists for. The baseline is the last commit that touched
-upstream:
-
-```
-git log -1 --format=%H -- angular-developer
-```
-
-Substitute that SHA literally:
-
-```
-git diff --stat <baseline sha>..HEAD -- angular-developer
-```
-
-**Never take the baseline from the history of `nx/`.** `git log -1 -- nx/` returns the last commit
-that touched `nx/` *for any reason*, so an ordinary fix to a forked file — a review finding, a
-typo — silently becomes the new baseline and hides every upstream change that came before it.
-That is a permanent, invisible failure: the skill reports "nothing changed upstream" while the
-fork is stale. Anchoring on `angular-developer/` avoids it, because that directory only ever
-changes on an upstream merge.
-
-If the command returns nothing (a repo where upstream has no history yet), say so and treat the
-sync as a full one — do not guess a baseline.
-
-**The diff bounds the work; it does not prove the fork is current.** A merge that was never
-synced afterwards leaves the baseline *at* that merge, so the diff comes back empty while `nx/` is
-already stale. So confirm rather than trust: compare every upstream file against its counterpart
-in `nx/` (`cmp -s`) and list which are byte-identical and which carry translations. A file that
-differs in a way no rule in `nx-rules.md` accounts for — or is identical where a rule says it
-should have been translated — means the fork is behind: report it and treat the sync as a full
-one. Otherwise only the files the diff named need re-translating.
-
-### 2. Verify the rules against the documentation — before writing anything
-
-**1. Check the rules.** Read [nx-rules.md](nx-rules.md), load the source pages it lists, and
-verify the rules you are about to apply:
-
-- Does every `@nx/angular:*` generator, executor and builder you would write still exist?
-- Are any of them deprecated or removed?
-- Do the flags still have those names and accepted values?
-
-Check names against `generators.json` and `executors.json` in the Nx repository, not only against
-the rendered documentation pages: the `/executors` page omits the `builders` section, so a real
-name such as `@nx/angular:dev-server` looks missing there.
-
-**If the documentation is unreachable, ask the user whether to continue or abort.** Do not decide
-this yourself, and do not guess at the content of a page you could not read.
-
-**2. Propose corrections and have them confirmed.** Where a rule no longer matches the
-documentation, show the proposed change to `nx-rules.md` — the old rule, the new one, and the
-source that contradicts it — and **wait for confirmation before writing it**. Do not silently
-rewrite the rules.
-
-This is the failure mode the whole setup exists to catch: Nx moves, and a rule set that is never
-re-checked quietly starts producing commands that do not run.
-
-### 3. Copy and translate
-
-> **Precondition:** `nx-rules.md` is corrected and the corrections are confirmed. Never translate
-> against a rule you already know to be wrong.
-
-Copy **only the files step 1 listed as changed** from `angular-developer/` into `nx/`, then
-translate each of them:
-
-- **Part A** of [nx-rules.md](nx-rules.md) for the one-to-one replacements.
-- **Part B** for everything that has no direct equivalent. These are instructions, not
-  substitutions — the affected sections are rewritten, sometimes removed.
-- **Part C** lists what is not forked at all; do not copy those files.
-
-**Do not blanket-copy the whole directory.** Overwriting all of `nx/` and re-translating from
-scratch discards a translation that was already reviewed, including the hand-authored Nx content
-that has no upstream counterpart (`tailwind-css.md`, `environment-configuration.md`). It also
-turns the review surface — `git diff nx/` — into 37 rewritten files instead of the upstream
-delta, and a regression introduced by the re-translation becomes invisible in exactly that diff.
-
-A file upstream did not change is left alone, even if a rule changed. When a *rule* changes,
-re-translate the files that rule applies to, and say in the report which those were.
-
-Two hard rules:
-
-- **Never invent a command.** If no rule covers a case, leave it, flag it in the report and
-  propose a new rule for `nx-rules.md`.
-- **Never "repair" a section by swapping verbs** when the underlying concept does not exist in
-  Nx. That turns a visible gap into a false claim, and the checks will pass while the content is
-  wrong.
-
-Files with no Angular CLI reference are copied unchanged.
-
-### 4. Check
-
-1. No `ng <verb>` inside a fenced code block anywhere in `nx/`. Occurrences in prose or inline
-   spans are reported, not rejected — a deliberate negative mention ("not `ng update`") is
-   intentional and must be confirmed as such.
-2. Every `@nx/*` generator, executor and plugin name, and every `nx <verb>`, was confirmed
-   against the documentation in step 2.
-3. Every `nx <target>` carries a project argument or an explicit flag — a bare `nx build` fails
-   in a monorepo. Same zone rule as for `ng` commands: inside a fenced code block a bare target
-   is a **defect**; in prose or an inline span it is a reference to the target rather than an
-   invocation ("the `serve` target") and is kept. Prefer that wording so the distinction is
-   visible. No `nx affected` in any zone — it is out of scope (rule B1).
-3a. No Angular CLI artefact is referenced as though it existed: `angular.json`, `.browserslistrc`,
-   `ng update`. Same zone rule as for `ng` commands — a deliberate negative mention ("there is no
-   `angular.json`") is kept and confirmed, anything that sends the agent to look for one is a
-   defect. This is what shipped a broken `naming-conventions.md`.
-4. The protected Angular identifiers in rule A4 occur exactly as often in `nx/` as upstream —
-   counted over the files that are actually forked. Exclude the Part C files from the upstream
-   side, or the count is permanently off (`NgModule`, for instance, appears in the dropped
-   `migrations.md`) and a real regression becomes indistinguishable from the constant mismatch.
-5. Every relative link in `nx/**` resolves, and no link points outside its own skill directory.
-6. `nx/` has the same file count as upstream, minus anything a rule deliberately removed.
-
-### 5. Report
-
-State plainly:
-
-- which upstream files changed since the last sync,
-- which files were re-translated, and why (an upstream change, or a changed rule),
-- which rules were applied, and which had to be corrected against the documentation,
-- cases with no rule, with a proposed rule for each,
-- which checks passed and which did not.
-- do not commit the changes so that the changes can be verified simple
+| angular cli (source)                         | nx workspace (target)                                            |
+|----------------------------------------------|------------------------------------------------------------------|
+| `ng generate component /path/to/MyComponent` | `nx g @nx/angular:component apps/myApp/src/path/to/MyComponent`  |
+| `ng generate service /path/to/MyService`     | `nx g @schematics/angular:service path/to/MyService`             |
