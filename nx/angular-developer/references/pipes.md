@@ -107,10 +107,10 @@ export class PriceService {
 
 ## Creating custom pipes
 
-Use the Angular CLI to generate a pipe:
+Use the Nx CLI to generate a pipe. Nx generators take the path positionally:
 
 ```bash
-ng generate pipe path/to/my-pipe
+nx g @nx/angular:pipe apps/my-app/src/app/my-pipe/my-pipe
 ```
 
 A pipe needs a `@Pipe` decorator with a `name` and a `transform` method implementing `PipeTransform`.

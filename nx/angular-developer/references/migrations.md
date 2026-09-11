@@ -1,30 +1,77 @@
 # Automatic Migrations & Code Modernization
 
-When tasked with refactoring or modernizing an existing codebase, always prefer using the official automated schematics available in `@angular/core` over manual text replacement.
+Two different things are called "migration" here, and they use different commands:
 
-## Discovering Migrations
+- **Version updates** — moving Nx, Angular and the plugins to newer versions. Use `nx migrate`.
+- **Code modernization** — applying a single Angular refactoring schematic to existing code.
+  Use `nx g @angular/core:<name>`.
 
-To view all available schematics for the installed version of the core framework, run:
-`ng generate @angular/core: --help`
+Always prefer these automated schematics over manual text replacement.
 
-## Common Migration Schematics
+## 1. Version Updates (`nx migrate`)
 
-Use the following commands to apply specific syntax updates. You can scope these commands to a specific project or directory using the `--project <name>` or `--path <dir>` flags.
+In an Nx workspace, do **not** run the Angular CLI's update command. Nx carries Angular's own
+migrations alongside the Nx ones and keeps them in step; running them separately desynchronizes
+the workspace.
+
+`nx migrate` is deliberately two-phase: the first command only plans, the second applies. That
+split is the point — it lets you review, reorder or drop individual migrations before they touch
+your code.
+
+```bash
+npx nx migrate latest             # updates package.json versions, writes migrations.json, changes no code
+npm install                       # or pnpm/yarn install
+npx nx migrate --run-migrations   # applies the migrations
+```
+
+Between the two, open `migrations.json` and review it. Entries can be reordered or removed to
+run migrations one at a time or to skip one.
+
+Useful flags:
+
+| Flag                             | Effect                                                      |
+| :------------------------------- | :---------------------------------------------------------- |
+| `--from` / `--to`                | Pin the version range explicitly                            |
+| `--include=required\|optional\|all` | `required` keeps the change set small (Nx + plugins only)  |
+| `--interactive`                  | Choose which migrations to include                          |
+| `--createCommits`                | One commit per migration, which makes the result reviewable |
+
+Upgrade **one major version at a time**. `nx report` shows the currently installed versions.
+
+## 2. Code Modernization Schematics
+
+To view the available schematics for the installed core framework version:
+
+```bash
+nx g @angular/core: --help
+```
+
+Apply a specific syntax update. Scope it with `--project <name>` or `--path <dir>`:
 
 | Feature to Modernize      | Command to Execute                                          |
 | :------------------------ | :---------------------------------------------------------- |
-| **Built-in Control Flow** | `ng generate @angular/core:control-flow`                    |
-| **Signal-based Inputs**   | `ng generate @angular/core:signal-input-migration`          |
-| **Signal Queries**        | `ng generate @angular/core:signal-queries-migration`        |
-| **Functional Outputs**    | `ng generate @angular/core:output-migration`                |
-| **`inject()` Function**   | `ng generate @angular/core:inject`                          |
-| **Self-Closing Tags**     | `ng generate @angular/core:self-closing-tag`                |
-| **Standalone**            | `ng generate @angular/core:standalone` (See workflow below) |
+| **Built-in Control Flow** | `nx g @angular/core:control-flow`                           |
+| **Signal-based Inputs**   | `nx g @angular/core:signal-input-migration`                 |
+| **Signal Queries**        | `nx g @angular/core:signal-queries-migration`               |
+| **Functional Outputs**    | `nx g @angular/core:output-migration`                       |
+| **`inject()` Function**   | `nx g @angular/core:inject`                                 |
+| **Self-Closing Tags**     | `nx g @angular/core:self-closing-tag`                       |
+| **Standalone**            | `nx g @angular/core:standalone` (See workflow below)        |
+
+In a monorepo, prefer running these per project rather than across the whole workspace, so each
+change set stays reviewable.
 
 ## Specialized Workflow: Migrating to Standalone
 
-The Standalone migration is an interactive, multi-step refactoring. You **MUST** perform this in three discrete stages, verifying that the application builds and runs correctly after each stage completes:
+The Standalone migration is an interactive, multi-step refactoring. You **MUST** perform this in
+three discrete stages, verifying that the application builds and runs correctly after each stage
+completes:
 
-1. **Phase 1**: Run `ng generate @angular/core:standalone` and select the option to **Convert all components, directives, and pipes to standalone**.
-2. **Phase 2**: Verify the build with `ng build`. Run the command again and select **Remove unnecessary NgModule classes**.
-3. **Phase 3**: Verify the build with `ng build`. Run the final pass and select **Bootstrap the project using standalone APIs**.
+1. **Phase 1**: Run `nx g @angular/core:standalone --project=my-app` and select the option to
+   **Convert all components, directives, and pipes to standalone**.
+2. **Phase 2**: Verify the build with `nx build my-app`. Run the command again and select
+   **Remove unnecessary NgModule classes**.
+3. **Phase 3**: Verify the build with `nx build my-app`. Run the final pass and select
+   **Bootstrap the project using standalone APIs**.
+
+After each phase, `nx affected -t build test` shows whether anything else in the workspace broke.

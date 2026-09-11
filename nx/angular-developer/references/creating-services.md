@@ -4,10 +4,10 @@ Services in Angular are reusable pieces of code that handle data fetching, busin
 
 ## Creating a Service
 
-You can generate a service using the Angular CLI:
+You can generate a service using the Nx CLI. `@nx/angular` has no service generator, so Angular's own schematic is passed through — this is the case where `--project` is correct:
 
 ```bash
-ng generate service my-data
+nx g @schematics/angular:service my-data --project=my-app
 ```
 
 Or you can manually create a TypeScript class and decorate it with `@Service()`. For reactive state management, store data in a private `signal()` and expose it publicly via `.asReadonly()`:

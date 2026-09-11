@@ -1,45 +1,42 @@
 ---
 name: angular-developer
-description: Generates Angular code and provides architectural guidance. Trigger when creating projects, components, services, or HTTP communication, or for best practices on reactivity (signals, linkedSignal, resource, httpResource), forms, dependency injection, routing, SSR, accessibility (ARIA), animations, styling (component styles, Tailwind CSS), testing, naming conventions, or CLI tooling.
+description: For Nx workspaces only (an nx.json at the workspace root). Generates Angular code and provides architectural guidance using the Nx CLI. Trigger when creating projects, components, services, or HTTP communication, or for best practices on reactivity (signals, linkedSignal, resource, httpResource), forms, dependency injection, routing, SSR, accessibility (ARIA), animations, styling (component styles, Tailwind CSS), testing, naming conventions, or Nx tooling.
 license: MIT
 metadata:
   author: Copyright 2026 Google LLC
   version: '1.0'
 ---
 
-# Angular Developer Guidelines
+# Angular Developer Guidelines (Nx)
 
-1. Always analyze the project's Angular version before providing guidance, as best practices and available features can vary significantly between versions. If creating a new project with Angular CLI, do not specify a version unless prompted by the user.
+0. **This skill applies to Nx workspaces only.** Confirm that `nx.json` exists at the workspace root before following it. If it does not, stop and use the Angular CLI version of this skill instead.
 
-2. When generating code, follow Angular's style guide and best practices for maintainability and performance. Use the Angular CLI for scaffolding components, services, directives, pipes, and routes to ensure consistency.
+1. Always analyze the project's Angular and Nx version before providing guidance, as best practices and available features vary significantly between versions. `nx report` lists the installed versions.
 
-3. Once you finish generating code, run `ng build` to ensure there are no build errors. If there are errors, analyze the error messages and fix them before proceeding. Do not skip this step, as it is critical for ensuring the generated code is correct and functional.
+2. When generating code, follow Angular's style guide and best practices for maintainability and performance. Use the Nx CLI for scaffolding components, services, directives, pipes, and routes to ensure consistency. Never use `ng` in an Nx workspace — Nx runs Angular's builders and schematics itself, and there is no `angular.json` for the Angular CLI to read.
 
-## Creating New Projects
+3. Once you finish generating code, run the build to ensure there are no build errors: `nx build <project>`, or `nx affected -t build` to catch breakage in dependent projects. If there are errors, analyze the error messages and fix them before proceeding. Do not skip this step, as it is critical for ensuring the generated code is correct and functional.
+
+4. Generic Nx topics — project graph, `affected`, caching, library architecture, module boundaries, generator discovery — are covered by the Nx MCP server and the official Nx skills, not by this one. Use those rather than guessing.
+
+## Creating Projects
 
 If no guidelines are provided by the user, here are some default rules to follow when creating a new Angular project:
 
 1. Use the latest stable version of Angular unless the user specifies otherwise.
 2. Use Signal Forms for form management in new projects (stable in Angular v22 and newer) [Find out more](references/signal-forms.md).
 
-**Execution Rules for `ng new`:**
-When asked to create a new Angular project, you must determine the correct execution command by following these strict steps:
+**Inside an existing Nx workspace**, an "Angular project" is an application or library in that
+workspace, not a new workspace:
 
-**Step 1: Check for an explicit user version.**
+```bash
+nx g @nx/angular:application apps/<name>
+nx g @nx/angular:library libs/<name>
+```
 
-- **IF** the user requests a specific version (e.g., Angular 15), bypass local installations and strictly use `npx`.
-- **Command:** `npx @angular/cli@<requested_version> new <project-name>`
-
-**Step 2: Check for an existing Angular installation.**
-
-- **IF** no specific version is requested, run `ng version` in the terminal to check if the Angular CLI is already installed on the system.
-- **IF** the command succeeds and returns an installed version, use the local/global installation directly.
-- **Command:** `ng new <project-name>`
-
-**Step 3: Fallback to Latest.**
-
-- **IF** no specific version is requested AND the `ng version` command fails (indicating no Angular installation exists), you must use `npx` to fetch the latest version.
-- **Command:** `npx @angular/cli@latest new <project-name>`
+**Creating a new workspace** is a separate step, covered by the `angular-new-app` skill
+(`npx create-nx-workspace@latest`). Do not use the Angular CLI to scaffold a workspace that is
+meant to be an Nx workspace.
 
 ## Components
 
@@ -138,7 +135,7 @@ When writing or updating tests, consult the following references based on the ta
 
 When working with Angular tooling, consult the following references:
 
-- **Angular CLI**: Creating applications, generating code (components, routes, services), serving, and building. Read [cli.md](references/cli.md)
-- **Code Modernization**: Automatically refactoring to modern standards using migrations. Read [migrations.md](references/migrations.md)
-- **Angular MCP Server**: Available tools, configuration, and experimental features. Read [mcp.md](references/mcp.md)
+- **Nx CLI**: Creating applications and libraries, generating code (components, routes, services), serving, and building. Read [cli.md](references/cli.md)
+- **Version Updates and Code Modernization**: The two-phase `nx migrate` flow and Angular's refactoring schematics. Read [migrations.md](references/migrations.md)
+- **Nx MCP Server**: Available tools, configuration, and setup via `nx configure-ai-agents`. Read [mcp.md](references/mcp.md)
 - **Environment Configuration**: Strategies for build-time and runtime configuration. Read [environment-configuration.md](references/environment-configuration.md)

@@ -20,13 +20,10 @@ Environment files define configuration values that are replaced at build time.
 > Never store sensitive information like API keys, secrets, or credentials in environment files.
 > These values can be easily accessed by users.
 
-Generate environment files using the CLI:
+Nx has no `environments` generator — create the files by hand and wire them up with
+`fileReplacements` in the build target's configurations.
 
-```bash
-ng generate environments
-```
-
-This creates environment-specific files such as:
+Create the environment-specific files, for example:
 
 ```ts
 // environment.ts
@@ -50,7 +47,32 @@ import {environment} from '../environments/environment';
 const apiUrl = environment.apiUrl;
 ```
 
-The Angular CLI replaces the appropriate file based on the build configuration.
+Declare the replacement in the project's build target. In an Nx workspace this lives in the
+project's `project.json` (or, where targets are inferred, in the Angular build configuration the
+plugin reads):
+
+```jsonc
+// apps/my-app/project.json
+{
+  "targets": {
+    "build": {
+      "configurations": {
+        "development": {
+          "fileReplacements": [
+            {
+              "replace": "apps/my-app/src/environments/environment.ts",
+              "with": "apps/my-app/src/environments/environment.development.ts"
+            }
+          ]
+        }
+      }
+    }
+  }
+}
+```
+
+The builder then swaps the file based on the configuration selected by
+`nx build my-app --configuration=development`.
 
 If you need a development-mode check, use `isDevMode()` from `@angular/core` instead of relying on a manually maintained `production` flag.
 

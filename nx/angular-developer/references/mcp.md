@@ -1,96 +1,63 @@
-# Angular CLI MCP Server
+# Nx MCP Server
 
-The Angular CLI includes a Model Context Protocol (MCP) server that enables AI assistants (like Cursor, Gemini CLI, JetBrains AI, etc.) to interact directly with the Angular CLI. It provides tools for project analysis, guided migrations, and running builds/tests.
+Nx ships a Model Context Protocol (MCP) server that lets AI assistants interact with the
+workspace: project graph, project-to-file mapping, runnable targets, available generators, and
+Nx documentation. In an Nx workspace it replaces the MCP server bundled with the Angular CLI:
+that CLI is usually not installed here, and its workspace tools read `angular.json`, which does
+not exist under Nx (per-project `project.json` plus `nx.json` instead).
 
-## Available Tools (Default)
+## Setup
 
-When the MCP server is enabled, AI agents have access to the following tools:
+The supported way to configure it, together with the agent config files and the official Nx
+skills, is:
 
-| Name                        | Description                                                                                               |
-| :-------------------------- | :-------------------------------------------------------------------------------------------------------- |
-| `ai_tutor`                  | Launches an interactive AI-powered Angular tutor.                                                         |
-| `devserver.start`           | Asynchronously starts a dev server (`ng serve`). Returns immediately.                                     |
-| `devserver.stop`            | Stops the dev server.                                                                                     |
-| `devserver.wait_for_build`  | Returns the logs of the most recent build in a running dev server.                                        |
-| `get_best_practices`        | Retrieves the Angular Best Practices Guide (crucial for standalone components, typed forms, etc.).        |
-| `list_projects`             | Lists all applications and libraries in the workspace by reading `angular.json`.                          |
-| `onpush_zoneless_migration` | Analyzes code and provides a plan to migrate it to `OnPush` change detection (prerequisite for zoneless). |
-| `run_target`                | Executes a configured target.                                                                             |
-| `search_documentation`      | Searches the official documentation at `https://angular.dev`.                                             |
-
-## Configuration
-
-To use the MCP server, you configure your host environment (IDE or CLI) to run `npx @angular/cli mcp`.
-
-### Antigravity IDE
-
-Create a file named `.antigravity/mcp.json` in your project's root:
-
-```json
-{
-  "mcpServers": {
-    "angular-cli": {
-      "command": "npx",
-      "args": ["-y", "@angular/cli", "mcp"]
-    }
-  }
-}
+```bash
+npx nx configure-ai-agents
 ```
 
-### Gemini CLI
+Select `claude` when prompted. For Claude Code this installs the Nx skills as a plugin rather
+than copying files into the workspace.
 
-Create `.gemini/settings.json` in the project root:
+To register the server directly instead:
 
-```json
-{
-  "mcpServers": {
-    "angular-cli": {
-      "command": "npx",
-      "args": ["-y", "@angular/cli", "mcp"]
-    }
-  }
-}
+```bash
+claude mcp add nx-mcp npx nx mcp
 ```
 
-### Cursor
+## Command
 
-Create `.cursor/mcp.json` in the project root (or globally at `~/.cursor/mcp.json`):
+- Nx >= 21.4: `npx nx mcp`
+- Older versions: `npx nx-mcp@latest`
 
-```json
-{
-  "mcpServers": {
-    "angular-cli": {
-      "command": "npx",
-      "args": ["-y", "@angular/cli", "mcp"]
-    }
-  }
-}
-```
+Options include `--transport` (`stdio`, `sse`, `http`) and `--port` for the HTTP/SSE port
+(default `9921`).
 
-### VS Code
-
-Create `.vscode/mcp.json`:
+Manual configuration, for hosts that read an MCP config file:
 
 ```json
 {
   "servers": {
-    "angular-cli": {
+    "nx-mcp": {
+      "type": "stdio",
       "command": "npx",
-      "args": ["-y", "@angular/cli", "mcp"]
+      "args": ["nx", "mcp"]
     }
   }
 }
 ```
 
-## Command Options
+## What it provides
 
-You can pass arguments to the MCP server in the `args` array of your configuration:
+- **Workspace understanding** — project relationships through the project graph, so cross-project
+  impact can be reasoned about instead of guessed.
+- **Task discovery** — which targets a project actually has, including targets inferred by
+  plugins such as `@nx/angular/plugin` that appear in no `project.json`.
+- **Generator discovery** — which generators are installed and what options they take, which is
+  what keeps generated code consistent with the workspace conventions.
+- **Nx documentation** — answers grounded in the current docs rather than in memorised commands.
 
-- `--read-only`: Only registers tools that do not modify the project.
-- `--local-only`: Only registers tools that do not require an internet connection.
+## Angular-specific guidance
 
-Example for read-only mode:
-
-```json
-"args": ["-y", "@angular/cli", "mcp", "--read-only"]
-```
+The Nx MCP server covers workspace and tooling questions. For Angular framework guidance
+(signals, forms, dependency injection, routing, accessibility), use the references in this
+skill.

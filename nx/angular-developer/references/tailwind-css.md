@@ -6,10 +6,10 @@ Tailwind CSS is a utility-first CSS framework that integrates seamlessly with An
 
 ## Automated Setup (Recommended)
 
-The easiest way to add Tailwind CSS to an Angular project is via the Angular CLI:
+The easiest way to add Tailwind CSS to an Nx workspace is via the Nx CLI:
 
 ```shell
-ng add tailwindcss
+nx add tailwindcss
 ```
 
 This will automatically:
