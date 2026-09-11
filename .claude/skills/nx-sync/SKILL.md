@@ -1,6 +1,6 @@
 ---
 name: nx-sync
-description: Regenerates the Nx fork of the Angular skills under nx/ from the upstream skills, applying the translation rules in nx-rules.md. Use after pulling upstream changes, after editing nx-rules.md, or when nx/ has drifted from the upstream skills.
+description: Regenerates the Nx fork of the Angular skills under nx/ from the upstream skills, applying the translation rules in its own nx-rules.md reference. Use after pulling upstream changes, after editing nx-rules.md, or when nx/ has drifted from the upstream skills.
 allowed-tools: Read, Write, Edit, Grep, Glob, WebFetch, Bash(git diff:*), Bash(git status:*), Bash(git log:*), Bash(cp:*), Bash(find:*), Bash(grep:*), Bash(cmp:*), Bash(diff:*)
 ---
 
@@ -17,7 +17,7 @@ reviewed like any other file. Every change you make there must survive a human r
 | :-- | :-- |
 | `angular-developer/`, `angular-new-app/` | Upstream, **never edit** |
 | `nx/` | The Nx fork: same files, Angular CLI translated to Nx |
-| `nx-rules.md` | How to translate. The only place that defines this |
+| `nx-rules.md` (next to this file) | How to translate. The only place that defines this |
 
 ## Scope
 
@@ -42,25 +42,37 @@ still byte-identical and which carry translations.
 
 ### 2. Verify the rules against the documentation — before writing anything
 
-1. Read `nx-rules.md`. Load the source pages it lists and check the rules you are about to apply:
+**1. Check the rules.** Read [nx-rules.md](nx-rules.md), load the source pages it lists, and
+verify the rules you are about to apply:
 
 - Does every `@nx/angular:*` generator, executor and builder you would write still exist?
 - Are any of them deprecated or removed?
 - Do the flags still have those names and accepted values?
-- Check names against `generators.json` and `executors.json` in the Nx repository, not only against the rendered documentation pages: the `/executors` page omits the `builders` section, so a real name such as `@nx/angular:dev-server` looks missing there.
-- If the documentation is unreachable ask the first to continue or to aboart.
 
-2. on failures in `nx-rules.md` provide correction and let confirm the changes `nx-rules.md.
+Check names against `generators.json` and `executors.json` in the Nx repository, not only against
+the rendered documentation pages: the `/executors` page omits the `builders` section, so a real
+name such as `@nx/angular:dev-server` looks missing there.
 
+**If the documentation is unreachable, ask the user whether to continue or abort.** Do not decide
+this yourself, and do not guess at the content of a page you could not read.
+
+**2. Propose corrections and have them confirmed.** Where a rule no longer matches the
+documentation, show the proposed change to `nx-rules.md` — the old rule, the new one, and the
+source that contradicts it — and **wait for confirmation before writing it**. Do not silently
+rewrite the rules.
+
+This is the failure mode the whole setup exists to catch: Nx moves, and a rule set that is never
+re-checked quietly starts producing commands that do not run.
 
 ### 3. Copy and translate
 
-precondition: 3. **Correct `nx-rules.md` first, then translate.** 
+> **Precondition:** `nx-rules.md` is corrected and the corrections are confirmed. Never translate
+> against a rule you already know to be wrong.
 
 Copy `angular-developer/` and `angular-new-app/` into `nx/`, then translate every file that
 mentions the Angular CLI:
 
-- **Part A** of `nx-rules.md` for the one-to-one replacements.
+- **Part A** of [nx-rules.md](nx-rules.md) for the one-to-one replacements.
 - **Part B** for everything that has no direct equivalent. These are instructions, not
   substitutions — the affected sections are rewritten, sometimes removed.
 

@@ -87,8 +87,7 @@ not a build artifact.
 | :-- | :-- |
 | `angular-developer/`, `angular-new-app/` | Upstream export, never edited |
 | `nx/` | The Nx fork: same files, Angular CLI translated to Nx |
-| `nx-rules.md` | How the translation is done, with a documentation source per rule |
-| `.claude/skills/nx-sync/` | The `/nx-sync` skill that carries out the sync |
+| `.claude/skills/nx-sync/` | The `/nx-sync` skill, with `nx-rules.md` holding the translation rules and a documentation source per rule |
 
 Updating after an upstream change:
 
