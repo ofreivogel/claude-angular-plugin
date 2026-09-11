@@ -104,7 +104,7 @@ The project argument is mandatory — see rule B2.
 | :-- | :-- |
 | builder | executor |
 | schematic | generator |
-| `angular.json` | `project.json` per project + `nx.json` (rule B6) |
+| `angular.json` | `project.json` per project + `nx.json` (rule B5) |
 
 ## A4 Identifiers that must NOT be touched
 
@@ -116,7 +116,7 @@ them is a defect, and the counts must match the upstream file exactly:
 `ng-pristine` · `ng-dirty` · `ng-submitted` · `NgModule` · `ng-packagr`
 
 **Not** on this list — these are Angular CLI packages that legitimately disappear under Nx,
-because e2e setup moves to `--e2eTestRunner` (rule B3): `playwright-ng-schematics`,
+because e2e setup moves to `--e2eTestRunner` (rule B2): `playwright-ng-schematics`,
 `@cypress/schematic`, `@nightwatch/schematics`, `@wdio/schematics`, `@puppeteer/ng-schematics`.
 A drop in their count is expected, not a defect.
 
@@ -128,30 +128,7 @@ Each rule: **Trigger** · **Action** · **Source / Check**.
 If none of these rules covers a case, **do not invent a translation** — flag it in the report and
 propose a new rule for this file.
 
-## B1 — `ng update`
-
-**Trigger:** any `ng update` invocation. Mainly `references/migrations.md`.
-
-**Action:** replace with the two-phase Nx flow, and state that `ng update` is not used in an Nx
-workspace because Nx carries Angular's own migrations:
-
-```bash
-npx nx migrate latest          # writes package.json versions + migrations.json, changes no code
-npm install
-npx nx migrate --run-migrations
-```
-
-Keep both phases as distinct steps — the point of the split is that `migrations.json` can be
-reviewed, reordered or trimmed before running. Relevant flags: `--from`, `--to`,
-`--include=required|optional|all`, `--interactive`, `--createCommits`.
-
-Angular's own `@angular/core` schematics still apply; they are driven by `nx migrate`, not by
-`ng update`.
-
-**Source:** `/migrations` — **Check:** both phases present as separate commands; no `ng update`
-remains in the output.
-
-## B2 — task commands without a project
+## B1 — task commands without a project
 
 **Trigger:** `ng build`, `ng serve`, `ng test`, `ng lint` with no project.
 
@@ -164,7 +141,7 @@ guaranteed to break.
 
 **Source:** `/executors` — **Check:** no `nx <target>` without a following project argument or flag.
 
-## B3 — `ng e2e` and e2e setup
+## B2 — `ng e2e` and e2e setup
 
 **Trigger:** `ng e2e`, and the `ng add <framework>-schematics` block in `references/e2e-testing.md`.
 
@@ -177,12 +154,12 @@ Playwright being the generator default), not added afterwards with `ng add`.
 **Source:** `/generators`, `/executors` — **Check:** target project name ends in `-e2e`; no
 `ng add …-schematics` remains.
 
-## B4 — `ng g environments`
+## B3 — `ng g environments`
 
 **Trigger:** `ng generate environments`.
 
 **Action:** `@nx/angular` has no `environments` generator, but Angular's own schematic passes
-through — rule B7 applies:
+through — rule B6 applies:
 
 ```bash
 nx g @schematics/angular:environments --project=my-app
@@ -197,7 +174,7 @@ for it in `angular.json`.
 **Source:** `@schematics/angular` `collection.json` and `environments/schema.json` — **Check:**
 the generator call is present and carries `--project`.
 
-## B5 — `ng deploy`
+## B4 — `ng deploy`
 
 **Trigger:** `ng deploy`, and the `ng add @angular/fire` + deploy flow in `references/cli.md`.
 
@@ -207,7 +184,7 @@ Either drop the section or mark it explicitly as depending on the deployment plu
 
 **Source:** `/executors` — **Check:** `nx deploy` does not appear in the output.
 
-## B6 — `angular.json`
+## B5 — `angular.json`
 
 **Trigger:** any mention of `angular.json`, in code or in prose.
 
@@ -222,7 +199,7 @@ the resolved configuration.
 
 **Source:** `/introduction` — **Check:** `angular.json` no longer appears in the output.
 
-## B7 — generators with no `@nx/angular` counterpart
+## B6 — generators with no `@nx/angular` counterpart
 
 **Trigger:** `ng g service|guard|resolver|interceptor|module|environments|class|interface|enum`.
 
@@ -246,7 +223,7 @@ no X generator" that X cannot be generated. Check `@schematics/angular` before d
 **Source:** `@schematics/angular` `collection.json` — **Check:** every `@nx/angular:*` name in
 the output appears in the verified generator list of rule A1.
 
-## B8 — `--project` on an Nx generator
+## B7 — `--project` on an Nx generator
 
 **Trigger:** an `@nx/angular:*` invocation carrying `--project`.
 
@@ -266,7 +243,7 @@ migrations accept `--project`; that is incorrect and must not be carried over.
 **Source:** the generator `schema.json` files — **Check:** no `@nx/angular:*` and no
 `@angular/core:*` invocation carries `--project`; every `@schematics/angular:*` invocation does.
 
-## B9 — `ng new`
+## B8 — `ng new`
 
 **Trigger:** `ng new`, and the workspace-creation decision tree in `angular-developer/SKILL.md`.
 
@@ -292,7 +269,7 @@ To convert an existing Angular CLI workspace: `npx nx@latest init`, or
 output appears in the create-nx-workspace reference.
 
 
-## B10 — test commands
+## B9 — test commands
 
 **Trigger:** `ng test`, and the command lines in the testing references.
 
@@ -320,7 +297,7 @@ with the default esbuild bundler the default is `vitest-angular`.
 **Source:** `/executors` — **Check:** every option named appears on the documented test executor.
 
 
-## B11 — package, generator and executor names in general
+## B10 — package, generator and executor names in general
 
 **Trigger:** any `@nx/*` name in the output.
 
@@ -376,7 +353,7 @@ guards, resolvers, interceptors or modules so those pass `@schematics/angular` t
 `--project`. That guidance lives in the *Generating Angular Code* section of `SKILL.md`.
 
 **Not to be lost:** exactly that section — the positional-path rule and the `@schematics/angular`
-fallback (rules B7, B8). Without it the skill invents `@nx/angular:service`.
+fallback (rules B6, B7). Without it the skill invents `@nx/angular:service`.
 
 Remove the `cli.md` bullet from `SKILL.md` along with the file.
 
@@ -402,3 +379,23 @@ Remove the `mcp.md` bullet from `SKILL.md` along with the file.
 
 **Source:** `/introduction` — **Check:** `references/mcp.md` absent from `nx/`; no dead link in
 `SKILL.md`.
+
+## C4 — `references/migrations.md`
+
+**Trigger:** the file itself.
+
+**Action:** **drop it.** Version updates are `nx migrate` — a two-phase flow (`nx migrate latest`,
+then `nx migrate --run-migrations` after installing) that belongs to Nx and is covered by the Nx
+skills. `ng update` is not used in an Nx workspace at all.
+
+The file also listed Angular's own code-modernization schematics (`control-flow`, `inject`,
+`signal-input-migration`, `signal-queries-migration`, `output-migration`, `self-closing-tag`, and
+the three-phase `standalone` workflow). Those are dropped with it by decision, not by oversight.
+
+**Not to be lost:** nothing is carried over. If the modernization schematics are wanted back
+later, they belong in their own reference, and note that they are scoped with **`--path <dir>`
+only** — none of them has a `project` option (rule B7).
+
+Remove the `migrations.md` bullet from `SKILL.md` along with the file.
+
+**Check:** `references/migrations.md` absent from `nx/`; no dead link in `SKILL.md`.

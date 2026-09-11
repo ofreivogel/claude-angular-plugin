@@ -166,5 +166,4 @@ When writing or updating tests, consult the following references based on the ta
 
 When working with Angular tooling, consult the following references:
 
-- **Version Updates and Code Modernization**: The two-phase `nx migrate` flow and Angular's refactoring schematics. Read [migrations.md](references/migrations.md)
 - **Environment Configuration**: Strategies for build-time and runtime configuration. Read [environment-configuration.md](references/environment-configuration.md)

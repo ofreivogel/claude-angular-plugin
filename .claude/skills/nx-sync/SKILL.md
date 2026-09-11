@@ -26,7 +26,7 @@ caching, library architecture, module boundaries, generator discovery — is **o
 is covered by the Nx MCP server and the official Nx skills. Do not add such content, and do not
 let the fork grow beyond a translation of the upstream skill.
 
-Three things are deliberately **not** forked, and a sync must not reintroduce them. **Part C** of
+Four things are deliberately **not** forked, and a sync must not reintroduce them. **Part C** of
 nx-rules.md states each one with what must not be lost along with it:
 
 - the `angular-new-app` skill (C1) — workspace creation is `create-nx-workspace`, generic Nx
@@ -35,6 +35,8 @@ nx-rules.md states each one with what must not be lost along with it:
   `nx test`, which the Nx skills already cover. Its Angular-specific remainder lives in the
   *Generating Angular Code* section of the skill's `SKILL.md`.
 - `references/mcp.md` (C3) — the Nx MCP server, its setup and its tools are Nx's own territory.
+- `references/migrations.md` (C4) — version updates are `nx migrate`, an Nx flow. Angular's
+  code-modernization schematics went with it by decision; nothing is carried over.
 
 ## Procedure
 
