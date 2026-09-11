@@ -1,12 +1,12 @@
 ---
 name: nx-sync
-description: Regenerates the Nx fork of the Angular skills under nx/ from the upstream skills, applying the translation rules in its own nx-rules.md reference. Use after pulling upstream changes, after editing nx-rules.md, or when nx/ has drifted from the upstream skills.
+description: Regenerates the Nx fork of the angular-developer skill under nx/ from the upstream skill, applying the translation rules in its own nx-rules.md reference. Use after pulling upstream changes, after editing nx-rules.md, or when nx/ has drifted from the upstream skills.
 allowed-tools: Read, Write, Edit, Grep, Glob, WebFetch, Bash(git diff:*), Bash(git status:*), Bash(git log:*), Bash(cp:*), Bash(find:*), Bash(grep:*), Bash(cmp:*), Bash(diff:*)
 ---
 
 # nx-sync
 
-Maintains `nx/` — the Nx fork of the upstream Angular skills — as reviewable repository content.
+Maintains `nx/` — the Nx fork of the upstream `angular-developer` skill — as reviewable repository content.
 
 **`nx/` is written by this skill, but it is not a build artifact.** It is committed, read and
 reviewed like any other file. Every change you make there must survive a human reading the diff.
@@ -15,8 +15,8 @@ reviewed like any other file. Every change you make there must survive a human r
 
 | Path | Role |
 | :-- | :-- |
-| `angular-developer/`, `angular-new-app/` | Upstream, **never edit** |
-| `nx/` | The Nx fork: same files, Angular CLI translated to Nx |
+| `angular-developer/` | Upstream, **never edit** |
+| `nx/angular-developer/` | The Nx fork: same files, Angular CLI translated to Nx |
 | `nx-rules.md` (next to this file) | How to translate. The only place that defines this |
 
 ## Scope
@@ -24,7 +24,11 @@ reviewed like any other file. Every change you make there must survive a human r
 Translate Angular-specific tooling only. Generic Nx knowledge — project graph, `affected`,
 caching, library architecture, module boundaries, generator discovery — is **out of scope**; it
 is covered by the Nx MCP server and the official Nx skills. Do not add such content, and do not
-let the fork grow beyond a translation of the upstream skills.
+let the fork grow beyond a translation of the upstream skill.
+
+The Nx plugin ships **only** `angular-developer`. Upstream's `angular-new-app` is deliberately
+not forked: creating a workspace is `create-nx-workspace`, which is generic Nx territory. Do not
+add it back.
 
 ## Procedure
 
@@ -33,8 +37,8 @@ let the fork grow beyond a translation of the upstream skills.
 Report what changed upstream since the last sync, so the work is bounded:
 
 ```
-git log --oneline -5 -- angular-developer angular-new-app
-git diff --stat HEAD -- angular-developer angular-new-app
+git log --oneline -5 -- angular-developer
+git diff --stat HEAD -- angular-developer
 ```
 
 For each file, compare upstream against its counterpart in `nx/` (`cmp -s`) to see which are
@@ -69,8 +73,7 @@ re-checked quietly starts producing commands that do not run.
 > **Precondition:** `nx-rules.md` is corrected and the corrections are confirmed. Never translate
 > against a rule you already know to be wrong.
 
-Copy `angular-developer/` and `angular-new-app/` into `nx/`, then translate every file that
-mentions the Angular CLI:
+Copy `angular-developer/` into `nx/`, then translate every file that mentions the Angular CLI:
 
 - **Part A** of [nx-rules.md](nx-rules.md) for the one-to-one replacements.
 - **Part B** for everything that has no direct equivalent. These are instructions, not

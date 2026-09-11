@@ -17,8 +17,6 @@ metadata:
 
 3. Once you finish generating code, run the build to ensure there are no build errors: `nx build <project>`, or `nx affected -t build` to catch breakage in dependent projects. If there are errors, analyze the error messages and fix them before proceeding. Do not skip this step, as it is critical for ensuring the generated code is correct and functional.
 
-4. Generic Nx topics — project graph, `affected`, caching, library architecture, module boundaries, generator discovery — are covered by the Nx MCP server and the official Nx skills, not by this one. Use those rather than guessing.
-
 ## Creating Projects
 
 If no guidelines are provided by the user, here are some default rules to follow when creating a new Angular project:
@@ -34,9 +32,9 @@ nx g @nx/angular:application apps/<name>
 nx g @nx/angular:library libs/<name>
 ```
 
-**Creating a new workspace** is a separate step, covered by the `angular-new-app` skill
-(`npx create-nx-workspace@latest`). Do not use the Angular CLI to scaffold a workspace that is
-meant to be an Nx workspace.
+**Creating a new workspace** is a separate step: `npx create-nx-workspace@latest <name>
+--preset=angular-monorepo`. Do not use the Angular CLI to scaffold a workspace that is meant to
+be an Nx workspace.
 
 ## Components
 

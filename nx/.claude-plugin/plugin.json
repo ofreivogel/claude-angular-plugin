@@ -1,8 +1,8 @@
 {
   "name": "angular-nx",
   "version": "22.1.0",
-  "description": "Angular development plugin for Nx workspaces: angular-developer and angular-new-app skills adapted to the Nx CLI",
+  "description": "Angular development plugin for Nx workspaces: the angular-developer skill adapted to the Nx CLI",
   "author": { "name": "Oliver Freivogel" },
   "license": "MIT",
-  "skills": ["./angular-developer", "./angular-new-app"]
+  "skills": ["./angular-developer"]
 }

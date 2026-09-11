@@ -1,7 +1,10 @@
 # Nx Translation Rules
 
-Reference used by the `/nx-sync` skill to translate the upstream Angular CLI skills
-(`angular-developer/`, `angular-new-app/`) into their Nx counterparts under `nx/`.
+Reference used by the `/nx-sync` skill to translate the upstream `angular-developer` skill into
+its Nx counterpart under `nx/`.
+
+Upstream's `angular-new-app` skill is **not** forked — workspace creation is generic Nx territory
+(`create-nx-workspace`), which this fork deliberately leaves to the official Nx skills.
 
 **This file is the only place that defines how a translation is done.** Keeping it here —
 rather than in the skill prompt — is what makes repeated syncs consistent.
@@ -239,7 +242,7 @@ segment. `--project` applies only to pass-through Angular schematics (rule B7).
 
 ## B9 — `ng new`
 
-**Trigger:** `ng new`, i.e. most of `angular-new-app/SKILL.md`.
+**Trigger:** `ng new`, and the workspace-creation decision tree in `angular-developer/SKILL.md`.
 
 **Action:** use `create-nx-workspace`:
 

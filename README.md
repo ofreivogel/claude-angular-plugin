@@ -41,14 +41,17 @@ This fork is packaged as two [Claude Code](https://docs.claude.com/en/docs/claud
 served from one marketplace. Both expose the same two skills; they differ only in which CLI they
 assume.
 
-| Plugin | For | CLI | MCP server |
-| :-- | :-- | :-- | :-- |
-| `angular` | Angular CLI workspaces | `ng` | Angular CLI (`ng mcp`) |
-| `angular-nx` | Nx workspaces (`nx.json` at the root) | `nx` | none — see below |
+| Plugin | For | CLI | Skills | MCP server |
+| :-- | :-- | :-- | :-- | :-- |
+| `angular` | Angular CLI workspaces | `ng` | `angular-developer`, `angular-new-app` | Angular CLI (`ng mcp`) |
+| `angular-nx` | Nx workspaces (`nx.json` at the root) | `nx` | `angular-developer` | none — see below |
 
-**Install one of them, not both.** The skills carry the same names in both plugins
-(`angular:angular-developer` vs `angular-nx:angular-developer`), so explicit invocation is
-unambiguous — but with both installed, automatic skill selection has two near-identical
+`angular-nx` deliberately does not fork `angular-new-app`: creating a workspace is
+`create-nx-workspace`, which the official Nx skills already cover.
+
+**Install one of them, not both.** The `angular-developer` skill carries the same name in both
+plugins (`angular:angular-developer` vs `angular-nx:angular-developer`), so explicit invocation
+is unambiguous — but with both installed, automatic skill selection has two near-identical
 candidates to choose between.
 
 ```bash
@@ -80,13 +83,13 @@ npx nx configure-ai-agents     # sets up the Nx MCP server and the official Nx s
 
 ## How the Nx variant is maintained
 
-`nx/` is a translation of the upstream skills, kept as ordinary reviewable repository content —
-not a build artifact.
+`nx/` is a translation of the upstream `angular-developer` skill, kept as ordinary reviewable
+repository content — not a build artifact.
 
 | Path | Role |
 | :-- | :-- |
-| `angular-developer/`, `angular-new-app/` | Upstream export, never edited |
-| `nx/` | The Nx fork: same files, Angular CLI translated to Nx |
+| `angular-developer/` | Upstream export, never edited |
+| `nx/angular-developer/` | The Nx fork: same files, Angular CLI translated to Nx |
 | `.claude/skills/nx-sync/` | The `/nx-sync` skill, with `nx-rules.md` holding the translation rules and a documentation source per rule |
 
 Updating after an upstream change:
@@ -101,7 +104,7 @@ git diff nx/
 them, so commands that Nx has renamed or removed surface as a rule correction instead of as
 broken output.
 
-The Nx variant deliberately covers only Angular-specific tooling. Generic Nx topics — project
+The Nx variant deliberately covers only Angular-specific tooling in the `angular-developer` skill. Generic Nx topics — project
 graph, `affected`, caching, library architecture, module boundaries — are left to the Nx MCP
 server and the official Nx skills.
 
