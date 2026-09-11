@@ -20,10 +20,15 @@ Environment files define configuration values that are replaced at build time.
 > Never store sensitive information like API keys, secrets, or credentials in environment files.
 > These values can be easily accessed by users.
 
-Nx has no `environments` generator — create the files by hand and wire them up with
-`fileReplacements` in the build target's configurations.
+`@nx/angular` has no `environments` generator, but Angular's own schematic is passed through —
+this is the case where `--project` is correct:
 
-Create the environment-specific files, for example:
+```bash
+nx g @schematics/angular:environments --project=my-app
+```
+
+It creates the environment files and registers the `fileReplacements` in the project
+configuration. The generated files look like this:
 
 ```ts
 // environment.ts
@@ -47,9 +52,9 @@ import {environment} from '../environments/environment';
 const apiUrl = environment.apiUrl;
 ```
 
-Declare the replacement in the project's build target. In an Nx workspace this lives in the
-project's `project.json` (or, where targets are inferred, in the Angular build configuration the
-plugin reads):
+The generator writes the replacement into the project's build target. In an Nx workspace that is
+the project's `project.json` (or, where targets are inferred, the Angular build configuration the
+plugin reads). To add one by hand, or to check what was generated:
 
 ```jsonc
 // apps/my-app/project.json

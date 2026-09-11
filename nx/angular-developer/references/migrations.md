@@ -46,7 +46,8 @@ To view the available schematics for the installed core framework version:
 nx g @angular/core: --help
 ```
 
-Apply a specific syntax update. Scope it with `--project <name>` or `--path <dir>`:
+Apply a specific syntax update. These migrations are scoped with **`--path <dir>`** only — they
+have no `--project` option, unlike the `@schematics/angular` generators:
 
 | Feature to Modernize      | Command to Execute                                          |
 | :------------------------ | :---------------------------------------------------------- |
@@ -58,8 +59,12 @@ Apply a specific syntax update. Scope it with `--project <name>` or `--path <dir
 | **Self-Closing Tags**     | `nx g @angular/core:self-closing-tag`                       |
 | **Standalone**            | `nx g @angular/core:standalone` (See workflow below)        |
 
-In a monorepo, prefer running these per project rather than across the whole workspace, so each
-change set stays reviewable.
+In a monorepo, point `--path` at a single project rather than letting a migration run across the
+whole workspace, so each change set stays reviewable:
+
+```bash
+nx g @angular/core:control-flow --path=apps/my-app/src
+```
 
 ## Specialized Workflow: Migrating to Standalone
 
@@ -67,8 +72,8 @@ The Standalone migration is an interactive, multi-step refactoring. You **MUST**
 three discrete stages, verifying that the application builds and runs correctly after each stage
 completes:
 
-1. **Phase 1**: Run `nx g @angular/core:standalone --project=my-app` and select the option to
-   **Convert all components, directives, and pipes to standalone**.
+1. **Phase 1**: Run `nx g @angular/core:standalone --path=apps/my-app/src` and select the option
+   to **Convert all components, directives, and pipes to standalone**.
 2. **Phase 2**: Verify the build with `nx build my-app`. Run the command again and select
    **Remove unnecessary NgModule classes**.
 3. **Phase 3**: Verify the build with `nx build my-app`. Run the final pass and select

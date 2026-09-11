@@ -51,14 +51,16 @@ nx g @nx/angular:directive apps/my-app/src/app/foo/foo
 nx g @nx/angular:pipe apps/my-app/src/app/foo/foo
 ```
 
-**`@nx/angular` has no generator for services, guards, resolvers, interceptors or modules.**
-Pass Angular's own schematic through — and there `--project` is the correct form:
+**`@nx/angular` has no generator for services, guards, resolvers, interceptors, modules,
+environments, classes, interfaces or enums.** Pass Angular's own schematic through — and there
+`--project` is the correct form:
 
 ```bash
 nx g @schematics/angular:service my-data --project=my-app
 nx g @schematics/angular:guard auth --project=my-app
 nx g @schematics/angular:interceptor auth --project=my-app
 nx g @schematics/angular:resolver user --project=my-app
+nx g @schematics/angular:environments --project=my-app
 ```
 
 Never invent an `@nx/angular:<name>`. Run `nx list @nx/angular` to see what exists, or ask the

@@ -179,14 +179,23 @@ Playwright being the generator default), not added afterwards with `ng add`.
 
 ## B4 — `ng g environments`
 
-**Trigger:** `ng generate environments`, and `references/environment-configuration.md` as a whole.
+**Trigger:** `ng generate environments`.
 
-**Action:** there is no Nx equivalent. Rewrite the section around `fileReplacements` in the
-build target's configurations in `project.json`. This file is **factually** wrong under Nx, not
-merely syntactically — a verb substitution does not fix it.
+**Action:** `@nx/angular` has no `environments` generator, but Angular's own schematic passes
+through — rule B7 applies:
 
-**Source:** `/generators` — **Check:** `@nx/angular` generator list contains no `environments`
-generator; the output describes `fileReplacements`.
+```bash
+nx g @schematics/angular:environments --project=my-app
+```
+
+`project` is required (`$source: projectName`). The schematic creates the environment files and
+registers the `fileReplacements`; under Nx that lands in the project's `project.json`.
+
+Also mention `fileReplacements` explicitly, since a reader coming from the Angular CLI will look
+for it in `angular.json`.
+
+**Source:** `@schematics/angular` `collection.json` and `environments/schema.json` — **Check:**
+the generator call is present and carries `--project`.
 
 ## B5 — `ng deploy`
 
@@ -215,30 +224,47 @@ the resolved configuration.
 
 ## B7 — generators with no `@nx/angular` counterpart
 
-**Trigger:** `ng g service|guard|resolver|interceptor|module|class|interface|enum`.
+**Trigger:** `ng g service|guard|resolver|interceptor|module|environments|class|interface|enum`.
 
-**Action:** `@nx/angular` provides **no** generator for these (confirmed against `/generators`).
-Pass Angular's own schematic through, which is where `--project` is correct:
+**Action:** `@nx/angular` provides **no** generator for these. Pass Angular's own schematic
+through, which is where `--project` is correct — it is `required` in every one of these schemas,
+with `$default: {$source: projectName}`:
 
 ```bash
 nx g @schematics/angular:service my-data --project=my-app
 nx g @schematics/angular:guard auth --project=my-app
+nx g @schematics/angular:environments --project=my-app
 ```
 
-**Do not invent `@nx/angular:service` or similar.**
+Verified members of `@schematics/angular` relevant here: `service` (`s`), `guard` (`g`),
+`resolver` (`r`), `interceptor`, `module` (`m`), `environments`, `class` (`cl`), `interface`
+(`i`), `enum` (`e`).
 
-**Source:** `/generators` — **Check:** every `@nx/angular:*` name in the output appears in the
-verified generator list of rule A1.
+**Do not invent `@nx/angular:service` or similar** — and do not conclude from "`@nx/angular` has
+no X generator" that X cannot be generated. Check `@schematics/angular` before declaring a gap.
+
+**Source:** `@schematics/angular` `collection.json` — **Check:** every `@nx/angular:*` name in
+the output appears in the verified generator list of rule A1.
 
 ## B8 — `--project` on an Nx generator
 
 **Trigger:** an `@nx/angular:*` invocation carrying `--project`.
 
-**Action:** Nx-owned generators take the path positionally
-(`nx g @nx/angular:component apps/app/src/app/foo/foo`); the name is derived from the last
-segment. `--project` applies only to pass-through Angular schematics (rule B7).
+**Action:** there are **three** scoping conventions, and mixing them produces commands that do
+not run. Verified against the schemas:
 
-**Source:** `/generators` — **Check:** no `@nx/angular:*` invocation carries `--project`.
+| Family | Scoping | Verified in the schema |
+| :-- | :-- | :-- |
+| `@nx/angular:*` generators | **positional path**, no `--project` | `path` / `directory` is `required` with `$default: {$source: argv, index: 0}`; there is no `project` property at all |
+| `@schematics/angular:*` generators | `name` positional **+ `--project`** | both `name` and `project` are `required`; `project` defaults to `$source: projectName` |
+| `@angular/core:*` migrations | **`--path <dir>`**, no `--project` | the schemas expose only `path` (plus migration-specific options); none has a `project` property |
+
+So `nx g @nx/angular:component apps/app/src/app/foo/foo --project=app` is wrong (unknown flag),
+and so is `nx g @angular/core:control-flow --project=app`. The upstream text claims these
+migrations accept `--project`; that is incorrect and must not be carried over.
+
+**Source:** the generator `schema.json` files — **Check:** no `@nx/angular:*` and no
+`@angular/core:*` invocation carries `--project`; every `@schematics/angular:*` invocation does.
 
 ## B9 — `ng new`
 
