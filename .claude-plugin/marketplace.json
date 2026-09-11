@@ -1,14 +1,20 @@
 {
   "name": "olivers-angular-marketplace",
-  "description": "Angular development skills for Claude Code",
+  "description": "Angular development skills for Claude Code, for Angular CLI and Nx workspaces",
   "owner": {
     "name": "Oliver Freivogel"
   },
   "plugins": [
     {
       "name": "angular",
-      "description": "Angular development plugin with skills, subagent and Angular CLI MCP",
-      "source": "./"
+      "description": "Angular development plugin for Angular CLI workspaces, with skills and the Angular CLI MCP server",
+      "source": "./",
+      "skills": ["./angular-developer", "./angular-new-app"]
+    },
+    {
+      "name": "angular-nx",
+      "description": "Angular development plugin for Nx workspaces: the same skills adapted to the Nx CLI",
+      "source": "./nx"
     }
   ]
 }

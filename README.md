@@ -31,38 +31,79 @@ We also accept pull requests for new features, updates, or bug fixes for the ski
 <!-- BEGIN DOWNSTREAM: claude-code-plugin -->
 <!--
   Everything below this marker is a downstream addition specific to this fork
-  and is NOT part of the upstream angular/angular skills export. It documents
-  how to consume this repo as a Claude Code plugin. When syncing from upstream,
-  preserve this entire block; conflicts (if any) appear only here.
+  and is NOT part of the upstream angular/angular skills export. When syncing
+  from upstream, preserve this entire block; conflicts (if any) appear only here.
 -->
 
 ## Use as a Claude Code plugin
 
-This fork is additionally packaged as a [Claude Code](https://docs.claude.com/en/docs/claude-code) plugin. It wraps the upstream skills together with a subagent and the Angular CLI MCP server (`ng mcp`). The wrapper lives in `.claude-plugin/`, `.mcp.json`, and `agents/` — these are added on top of the upstream content.
+This fork is packaged as two [Claude Code](https://docs.claude.com/en/docs/claude-code) plugins,
+served from one marketplace. Both expose the same two skills; they differ only in which CLI they
+assume.
 
-### What the plugin provides
+| Plugin | For | CLI | MCP server |
+| :-- | :-- | :-- | :-- |
+| `angular` | Angular CLI workspaces | `ng` | Angular CLI (`ng mcp`) |
+| `angular-nx` | Nx workspaces (`nx.json` at the root) | `nx` | none — see below |
 
-- **Skills**: `angular-developer`, `angular-new-app` (from upstream, namespaced as `angular:angular-developer` etc.)
-- **Subagent**: `angular-developer` (Sonnet, preloads both skills, invokes `ng build` after generation)
-- **MCP server**: `angular-cli` via `ng mcp` (requires the Angular CLI on `PATH`)
-
-### Prerequisites
-
-The `angular-cli` MCP server requires the Angular CLI to be installed globally and resolvable on your `PATH`. Without it, the MCP server will fail to start.
-
-```bash
-npm install -g @angular/cli
-# verify with
-ng version
-```
-
-### Install
+**Install one of them, not both.** The skills carry the same names in both plugins
+(`angular:angular-developer` vs `angular-nx:angular-developer`), so explicit invocation is
+unambiguous — but with both installed, automatic skill selection has two near-identical
+candidates to choose between.
 
 ```bash
 /plugin marketplace add https://github.com/ofreivogel/claude-angular
+
+# Angular CLI workspaces
 /plugin install angular@olivers-angular-marketplace
+
+# Nx workspaces
+/plugin install angular-nx@olivers-angular-marketplace
 ```
 
+### Prerequisites
 
+The `angular` plugin declares the `angular-cli` MCP server, which needs the Angular CLI on your
+`PATH`:
+
+```bash
+npm install -g @angular/cli
+ng version
+```
+
+The `angular-nx` plugin declares no MCP server on purpose. In an Nx workspace the Angular CLI is
+usually not installed, and Nx has its own server covering workspace topics:
+
+```bash
+npx nx configure-ai-agents     # sets up the Nx MCP server and the official Nx skills
+```
+
+## How the Nx variant is maintained
+
+`nx/` is a translation of the upstream skills, kept as ordinary reviewable repository content —
+not a build artifact.
+
+| Path | Role |
+| :-- | :-- |
+| `angular-developer/`, `angular-new-app/` | Upstream export, never edited |
+| `nx/` | The Nx fork: same files, Angular CLI translated to Nx |
+| `nx-rules.md` | How the translation is done, with a documentation source per rule |
+| `.claude/skills/nx-sync/` | The `/nx-sync` skill that carries out the sync |
+
+Updating after an upstream change:
+
+```bash
+git fetch upstream && git merge upstream/22.1.x
+# then run /nx-sync, and review with:
+git diff nx/
+```
+
+`/nx-sync` checks the rules in `nx-rules.md` against the current Nx documentation before applying
+them, so commands that Nx has renamed or removed surface as a rule correction instead of as
+broken output.
+
+The Nx variant deliberately covers only Angular-specific tooling. Generic Nx topics — project
+graph, `affected`, caching, library architecture, module boundaries — are left to the Nx MCP
+server and the official Nx skills.
 
 <!-- END DOWNSTREAM: claude-code-plugin -->
