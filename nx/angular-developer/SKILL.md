@@ -36,6 +36,37 @@ nx g @nx/angular:library libs/<name>
 --preset=angular-monorepo`. Do not use the Angular CLI to scaffold a workspace that is meant to
 be an Nx workspace.
 
+## Generating Angular Code
+
+How to run tasks and discover generators is Nx's own territory — use the Nx MCP server and the
+Nx skills for that. What is specific to Angular, and easy to get wrong, is **which** generator
+to reach for:
+
+**Nx-owned generators take the path positionally.** The name is derived from the last segment,
+and there is no `--project`:
+
+```bash
+nx g @nx/angular:component apps/my-app/src/app/foo/foo
+nx g @nx/angular:directive apps/my-app/src/app/foo/foo
+nx g @nx/angular:pipe apps/my-app/src/app/foo/foo
+```
+
+**`@nx/angular` has no generator for services, guards, resolvers, interceptors or modules.**
+Pass Angular's own schematic through — and there `--project` is the correct form:
+
+```bash
+nx g @schematics/angular:service my-data --project=my-app
+nx g @schematics/angular:guard auth --project=my-app
+nx g @schematics/angular:interceptor auth --project=my-app
+nx g @schematics/angular:resolver user --project=my-app
+```
+
+Never invent an `@nx/angular:<name>`. Run `nx list @nx/angular` to see what exists, or ask the
+Nx MCP server.
+
+_Note: There is no command to generate a single route definition. Generate a component, then add
+it to the `Routes` array manually._
+
 ## Components
 
 When working with Angular components, consult the following references based on the task:
@@ -133,7 +164,5 @@ When writing or updating tests, consult the following references based on the ta
 
 When working with Angular tooling, consult the following references:
 
-- **Nx CLI**: Creating applications and libraries, generating code (components, routes, services), serving, and building. Read [cli.md](references/cli.md)
 - **Version Updates and Code Modernization**: The two-phase `nx migrate` flow and Angular's refactoring schematics. Read [migrations.md](references/migrations.md)
-- **Nx MCP Server**: Available tools, configuration, and setup via `nx configure-ai-agents`. Read [mcp.md](references/mcp.md)
 - **Environment Configuration**: Strategies for build-time and runtime configuration. Read [environment-configuration.md](references/environment-configuration.md)

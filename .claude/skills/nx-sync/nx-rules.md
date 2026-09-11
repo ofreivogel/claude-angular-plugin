@@ -190,7 +190,7 @@ generator; the output describes `fileReplacements`.
 
 ## B5 — `ng deploy`
 
-**Trigger:** `ng deploy`, `ng add @angular/fire` + deploy flow in `references/cli.md`.
+**Trigger:** `ng deploy`, and the `ng add @angular/fire` + deploy flow in `references/cli.md`.
 
 **Action:** there is no generic Nx deploy command and no deploy executor in `@nx/angular`.
 Either drop the section or mark it explicitly as depending on the deployment plugin in use.
@@ -265,21 +265,25 @@ To convert an existing Angular CLI workspace: `npx nx@latest init`, or
 **Source:** `/create-workspace`, `/introduction` — **Check:** every flag and preset named in the
 output appears in the create-nx-workspace reference.
 
-## B10 — `references/mcp.md`
+## B10 — `references/mcp.md` is not forked
 
 **Trigger:** the file itself.
 
-**Action:** it documents the MCP server bundled with the Angular CLI (`devserver.start` runs
-`ng serve`, `list_projects` reads `angular.json`). The Nx plugin deliberately ships no MCP
-server, and `ng` is often not installed in an Nx workspace.
+**Action:** **drop it.** It documents the MCP server bundled with the Angular CLI
+(`devserver.start` runs `ng serve`, `list_projects` reads `angular.json`) — a server this plugin
+deliberately does not ship, for a CLI that is usually absent in an Nx workspace.
 
-Rewrite it to describe the **Nx MCP server** (`npx nx mcp`, or `npx nx-mcp@latest` below
-Nx 21.4), set up via `npx nx configure-ai-agents`. Do not "repair" the Angular CLI tool
-descriptions by substituting verbs — that turns a visible gap into a false claim.
+Translating it to describe the Nx MCP server was the obvious move and is still wrong: that
+server, its setup via `npx nx configure-ai-agents` and its tools are Nx's own territory, already
+covered by the official Nx skills. A copy here would only go stale.
 
-If the file is dropped instead, **remove its bullet from `SKILL.md`** as well.
+Note also that a verb substitution would be worse than dropping the file — it would turn a
+visible gap into a false claim about tools this plugin does not provide.
 
-**Source:** `/introduction` — **Check:** no dead link in `SKILL.md`.
+Remove the `mcp.md` bullet from `SKILL.md` along with the file.
+
+**Source:** `/introduction` — **Check:** `references/mcp.md` absent from `nx/`; no dead link in
+`SKILL.md`.
 
 ## B11 — test commands
 
@@ -307,6 +311,24 @@ The generator flag is `--unitTestRunner=vitest-angular|vitest-analog|jest|none`.
 with the default esbuild bundler the default is `vitest-angular`.
 
 **Source:** `/executors` — **Check:** every option named appears on the documented test executor.
+
+## B13 — `references/cli.md` is not forked
+
+**Trigger:** the file itself.
+
+**Action:** **drop it.** Once translated it described `nx g`, `nx build`, `nx serve`, `nx test`
+and `nx lint` — which is Nx's own territory, covered by the Nx MCP server and the official Nx
+skills (`nx-generate`, `nx-run-tasks`). Keeping it here would duplicate them and go stale.
+
+What must **not** be lost is the Angular-specific part, which no Nx skill covers: that Nx-owned
+generators take the path positionally, and that `@nx/angular` has no generator for services,
+guards, resolvers, interceptors or modules so those pass `@schematics/angular` through with
+`--project`. That guidance lives in the *Generating Angular Code* section of `SKILL.md`.
+
+Remove the `cli.md` bullet from `SKILL.md` along with the file.
+
+**Source:** — **Check:** `references/cli.md` absent from `nx/`; no dead link in `SKILL.md`; the
+positional-path and `@schematics/angular` fallback rules still present in `SKILL.md`.
 
 ## B12 — package, generator and executor names in general
 
