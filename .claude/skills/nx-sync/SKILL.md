@@ -1,7 +1,7 @@
 ---
 name: nx-sync
 description: Regenerates the Nx fork of the angular-developer skill under nx/ from the upstream skill, applying the translation rules in its own nx-rules.md reference. Use after pulling upstream changes, after editing nx-rules.md, or when nx/ has drifted from the upstream skills.
-allowed-tools: Read, Write, Edit, Grep, Glob, WebFetch, Bash(git diff:*), Bash(git status:*), Bash(git log:*), Bash(cp:*), Bash(find:*), Bash(grep:*), Bash(cmp:*), Bash(diff:*)
+allowed-tools: Read, Write, Edit, Grep, Glob, WebFetch, Bash(git diff:*), Bash(git status:*), Bash(git log:*), Bash(cp:*), Bash(rm:*), Bash(git rm:*), Bash(find:*), Bash(grep:*), Bash(cmp:*), Bash(diff:*)
 ---
 
 # nx-sync
@@ -45,8 +45,16 @@ nx-rules.md states each one with what must not be lost along with it:
 Report what changed upstream since the last sync, so the work is bounded:
 
 ```
-git log --oneline -5 -- angular-developer
-git diff --stat HEAD -- angular-developer
+git log --oneline -10 -- angular-developer
+```
+
+Find the commit of the last sync (the most recent commit touching `nx/`) and diff upstream
+against it — **not** against `HEAD`. Right after a committed upstream merge the working tree is
+clean, so `git diff HEAD` reports nothing in exactly the situation this skill exists for:
+
+```
+LAST=$(git log -1 --format=%H -- nx/)
+git diff --stat $LAST..HEAD -- angular-developer
 ```
 
 For each file, compare upstream against its counterpart in `nx/` (`cmp -s`) to see which are
@@ -107,7 +115,14 @@ Files with no Angular CLI reference are copied unchanged.
    against the documentation in step 2.
 3. Every `nx <target>` carries a project argument or an explicit flag — a bare `nx build` fails
    in a monorepo.
-4. The protected Angular identifiers in rule A4 occur exactly as often in `nx/` as upstream.
+3a. No Angular CLI artefact is referenced as though it existed: `angular.json`, `.browserslistrc`,
+   `ng update`. Same zone rule as for `ng` commands — a deliberate negative mention ("there is no
+   `angular.json`") is kept and confirmed, anything that sends the agent to look for one is a
+   defect. This is what shipped a broken `naming-conventions.md`.
+4. The protected Angular identifiers in rule A4 occur exactly as often in `nx/` as upstream —
+   counted over the files that are actually forked. Exclude the Part C files from the upstream
+   side, or the count is permanently off (`NgModule`, for instance, appears in the dropped
+   `migrations.md`) and a real regression becomes indistinguishable from the constant mismatch.
 5. Every relative link in `nx/**` resolves, and no link points outside its own skill directory.
 6. `nx/` has the same file count as upstream, minus anything a rule deliberately removed.
 

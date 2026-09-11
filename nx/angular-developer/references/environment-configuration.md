@@ -27,8 +27,13 @@ this is the case where `--project` is correct:
 nx g @schematics/angular:environments --project=my-app
 ```
 
-It creates the environment files and registers the `fileReplacements` in the project
-configuration. The generated files look like this:
+It creates the environment files. Whether it also registers the `fileReplacements` depends on
+your project: the schematic writes through the Angular devkit workspace host, so it needs an
+explicit `build` target to write into. **Where `@nx/angular/plugin` infers the targets, the
+project has no `build` block and nothing is registered — you must add it by hand** (see below),
+otherwise `nx build my-app --configuration=development` silently uses the production environment.
+
+The generated files look like this:
 
 ```ts
 // environment.ts
@@ -52,9 +57,8 @@ import {environment} from '../environments/environment';
 const apiUrl = environment.apiUrl;
 ```
 
-The generator writes the replacement into the project's build target. In an Nx workspace that is
-the project's `project.json` (or, where targets are inferred, the Angular build configuration the
-plugin reads). To add one by hand, or to check what was generated:
+The replacement belongs in the project's build target in `project.json`. Verify what the
+generator wrote — or add it yourself if the target was inferred:
 
 ```jsonc
 // apps/my-app/project.json
@@ -91,13 +95,14 @@ In some scenarios, applications need to load configuration at runtime instead of
 
 This allows the same build artifact to be deployed across multiple environments without rebuilding.
 
-A common approach is to load a JSON configuration file from the `assets` folder during application
-initialization.
+A common approach is to load a JSON configuration file served as a static asset during
+application initialization. In an Nx workspace that file belongs to the project, not the
+workspace root — `apps/my-app/public/` is served from the root of the deployed app.
 
 ### Example
 
 ```json
-// src/assets/config.json
+// apps/my-app/public/config.json
 {
   "apiUrl": "https://api.example.com"
 }
@@ -121,7 +126,7 @@ export class AppConfigService {
   private readonly http = inject(HttpClient);
 
   loadConfig() {
-    return this.http.get<AppConfig>('/assets/config.json').pipe(
+    return this.http.get<AppConfig>('/config.json').pipe(
       tap((data) => {
         this.config = data;
       }),

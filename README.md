@@ -38,8 +38,7 @@ We also accept pull requests for new features, updates, or bug fixes for the ski
 ## Use as a Claude Code plugin
 
 This fork is packaged as two [Claude Code](https://docs.claude.com/en/docs/claude-code) plugins,
-served from one marketplace. Both expose the same two skills; they differ only in which CLI they
-assume.
+served from one marketplace. They differ in which CLI they assume, and in how much they ship.
 
 | Plugin | For | CLI | Skills | MCP server |
 | :-- | :-- | :-- | :-- | :-- |

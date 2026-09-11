@@ -49,12 +49,17 @@ Narrow the scan to the application, then declare the libraries it actually depen
 @source '../../../libs/shared';
 ```
 
-_(If using SCSS, use `@use 'tailwindcss';` instead)._
+_Note on SCSS:_ Sass `@use` cannot carry Tailwind's `source()` argument, so there is no SCSS form
+that narrows the scan. Keep the Tailwind entry point as a plain `.css` file (it can still be
+listed alongside your `.scss` styles) so `source()` and `@source` remain available.
 
 ### 4. Keep the source directives in sync
 
 Maintaining that `@source` list by hand goes stale as dependencies change. `@juristr/nx-tailwind-sync`
 derives it from the project graph. Register it on the targets that build CSS:
+
+Register it on **every** target that produces CSS — `build` alone means `nx serve` will not
+regenerate the directives, and a newly added library's classes silently fail to render in dev:
 
 ```json
 {
@@ -62,12 +67,15 @@ derives it from the project graph. Register it on the targets that build CSS:
     "build": {
       "executor": "@angular/build:application",
       "syncGenerators": ["@juristr/nx-tailwind-sync:source-directives"]
+    },
+    "serve": {
+      "syncGenerators": ["@juristr/nx-tailwind-sync:source-directives"]
     }
   }
 }
 ```
 
-`nx build` and `nx serve` then update `styles.css` with the correct directives.
+Alternatively put it in `targetDefaults` in `nx.json` so it applies workspace-wide.
 
 ### 5. Use Utility Classes
 

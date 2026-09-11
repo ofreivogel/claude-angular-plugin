@@ -8,12 +8,11 @@
     {
       "name": "angular",
       "description": "Angular development plugin for Angular CLI workspaces, with skills and the Angular CLI MCP server",
-      "source": "./",
-      "skills": ["./angular-developer", "./angular-new-app"]
+      "source": "./"
     },
     {
       "name": "angular-nx",
-      "description": "Angular development plugin for Nx workspaces: the same skills adapted to the Nx CLI",
+      "description": "Angular development plugin for Nx workspaces: the angular-developer skill adapted to the Nx CLI",
       "source": "./nx"
     }
   ]

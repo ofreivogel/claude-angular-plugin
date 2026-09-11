@@ -6,7 +6,7 @@ This skill enforces Angular naming conventions for components, services, directi
 
 ## Core Principles
 
-1. **Prioritize Existing Conventions**: Before generating or refactoring files, check the existing project files, `angular.json` configuration, and ESLint rules. **Do not force suffixless naming on projects that rely on standard suffixes.**
+1. **Prioritize Existing Conventions**: Before generating or refactoring files, check the existing project files, the `generators` defaults in `nx.json` and the project's `project.json`, and ESLint rules. **Do not force suffixless naming on projects that rely on standard suffixes.**
 2. **Remove Role Suffixes (Modern Projects Only)**: In projects configured for "Intent over Role" or newly bootstrapped v20+ projects, filenames no longer include functional extensions like `.component.ts`, `.service.ts`, or `.directive.ts`. Corresponding TypeScript classes drop suffixes like `Component`, `Service`, or `Directive`.
 3. **Intent/Purpose-Based Naming**: When suffixless naming is active, name files and classes based on their specific domain, responsibility, or business purpose (e.g., `-data`, `-store`, `-api`, or `-formatter`).
 4. **Folder Location as Context**: Lean on folder hierarchy (`core/`, `features/`, `shared/`) and IDE capabilities to identify the technical role of files, rather than encoding that context within the file name.
@@ -68,7 +68,7 @@ Store pure, presentational elements and helpers with zero business logic in a sh
 
 - **How to Determine the Style in Use**:
   1.  Inspect adjacent files in the target directory (do they end in `.component.ts` or `.ts`?).
-  2.  Check `angular.json` for custom schematics options that might configure suffix behaviors.
+  2.  Check the `generators` block in `nx.json`, and the project's own `project.json`, for generator defaults that configure suffix behaviour. Nx has no `angular.json`.
   3.  If unsure, use the traditional role suffix style (`.component.ts`, `.service.ts`) as it is the safest default in the Angular ecosystem.
 - **Avoid Namespace Collisions**: Without role suffixes, files like `user.ts` (component) and `user.model.ts` (model) can collide if they both declare a class/interface named `User`.
   - To prevent this use more specific, intent-based names for components (e.g. `class UserProfile` in `user-profile.ts` or `class UserDetail` in `user-detail.ts`) while keeping the simple domain name for the interface (`interface User` in `user.model.ts`).

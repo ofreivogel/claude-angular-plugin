@@ -42,8 +42,8 @@ How to run tasks and discover generators is Nx's own territory — use the Nx MC
 Nx skills for that. What is specific to Angular, and easy to get wrong, is **which** generator
 to reach for:
 
-**Nx-owned generators take the path positionally.** The name is derived from the last segment,
-and there is no `--project`:
+**`@nx/angular` generators take the path positionally.** The name is derived from the last
+segment, and these generators have no `--project` option at all:
 
 ```bash
 nx g @nx/angular:component apps/my-app/src/app/foo/foo
@@ -62,6 +62,10 @@ nx g @schematics/angular:interceptor auth --project=my-app
 nx g @schematics/angular:resolver user --project=my-app
 nx g @schematics/angular:environments --project=my-app
 ```
+
+This applies to `@nx/angular` specifically, **not** to every Nx generator — other Nx plugins do
+take `--project` (`nx g @nx/playwright:configuration --project=my-app-e2e`). Check the generator's
+own options rather than generalising from this rule.
 
 Never invent an `@nx/angular:<name>`. Run `nx list @nx/angular` to see what exists, or ask the
 Nx MCP server.

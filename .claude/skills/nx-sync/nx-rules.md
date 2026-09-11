@@ -97,7 +97,7 @@ Verified generator list in `@nx/angular` (`/generators`): `application` (`app`),
 | `ng add X` | `nx add X` |
 | `ng version` | `nx report` |
 
-The project argument is mandatory — see rule B2.
+The project argument is mandatory — see rule B1.
 
 ## A3 Terminology
 
@@ -198,7 +198,14 @@ Many Nx projects have **no explicit `targets` block at all**, because plugins su
 `@nx/angular/plugin` infer targets from the tool configuration. `nx show project <name>` prints
 the resolved configuration.
 
-**Source:** `/introduction` — **Check:** `angular.json` no longer appears in the output.
+**Source:** `/introduction` — **Check:** zone-aware, like the `ng` check. Inside a code block or
+as an instruction to go look at it ("check `angular.json` for ...") it is a **defect**; a
+deliberate negative mention ("there is no `angular.json` for the Angular CLI to read") is kept
+and confirmed during review.
+
+Note that this rule is easy to miss because it has no `ng` prefix to grep for. `naming-conventions.md`
+shipped with two untranslated `angular.json` references precisely because the check was run only
+against `ng` commands.
 
 ## B6 — generators with no `@nx/angular` counterpart
 
@@ -352,7 +359,7 @@ described.
 
 # Part C — what is not forked
 
-Three things upstream ships that this fork deliberately leaves out. They are listed as rules so a
+Four things upstream ships that this fork deliberately leaves out. They are listed as rules so a
 sync does not quietly translate them back in. For each, note **what must not be lost** — dropping
 a file is only correct if the Angular-specific part of it survives somewhere.
 

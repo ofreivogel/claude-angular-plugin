@@ -23,24 +23,32 @@ Accepted values are `playwright` (the generator default), `cypress` and `none`.
 
 `@nx/cypress` is deprecated as of Nx 23 — prefer Playwright for new setups.
 
-To add e2e to an application that was generated with `--e2eTestRunner=none`, install the plugin
-and run its configuration generator:
+With `--e2eTestRunner=none` no e2e project is created, so there is nothing named `my-app-e2e` to
+configure later. To add e2e afterwards, create the project first, then configure it:
 
 ```bash
 nx add @nx/playwright
-nx g @nx/playwright:configuration --project=my-app-e2e
+nx g @nx/playwright:configuration --project=<existing-project>
 ```
+
+`--project` must name a project that exists. Note that `@nx/playwright:configuration` does take
+`--project` — the positional-path rule applies to `@nx/angular` generators, not to every Nx
+plugin.
 
 ## Running E2E Tests
 
 ```bash
 nx e2e my-app-e2e
-nx e2e my-app-e2e --configuration=production
+nx e2e my-app-e2e --configuration=ci
 nx run-many -t e2e
 nx affected -t e2e
 ```
 
 The project name is required.
+
+Which configurations exist depends on the runner — `@nx/playwright` generates a `ci`
+configuration. Run `nx show project my-app-e2e` to see what the target actually offers rather
+than assuming a name.
 
 ## Custom & Enterprise Testing Tools
 
