@@ -1,30 +1,16 @@
-# Using Tailwind CSS with Angular
+# Using Tailwind CSS with Angular in an Nx Workspace
 
 Tailwind CSS is a utility-first CSS framework that integrates seamlessly with Angular.
 
 **CRITICAL AGENT GUIDANCE: ALWAYS focus on Tailwind CSS v4 practices. DO NOT revert to old Tailwind v3 patterns (like creating `tailwind.config.js` with `@tailwind` directives) as this will break the application build. Modern Angular projects use Tailwind v4.**
 
-## Automated Setup (Recommended)
+## Setup
 
-The easiest way to add Tailwind CSS to an Nx workspace is via the Nx CLI:
-
-```shell
-nx add tailwindcss
-```
-
-This will automatically:
-
-1. Install `tailwindcss` and peer dependencies.
-2. Configure the project to use Tailwind CSS.
-3. Add the proper import to your global styles.
-
-## Manual Setup (Tailwind v4)
-
-If setting up manually, use the following Tailwind v4 pattern:
+Nx has **no** Tailwind generator — `@nx/angular:setup-tailwind` was removed. Install Tailwind the
+way the official [Tailwind CSS with Angular](https://tailwindcss.com/docs/installation/framework-guides/angular)
+guide describes, then apply the Nx-specific scanning setup below.
 
 ### 1. Install Dependencies
-
-Install Tailwind CSS and PostCSS:
 
 ```shell
 npm install tailwindcss @tailwindcss/postcss postcss
@@ -32,7 +18,8 @@ npm install tailwindcss @tailwindcss/postcss postcss
 
 ### 2. Configure PostCSS
 
-Create a `.postcssrc.json` file in the project root:
+Create a `.postcssrc.json` in the **project** root (e.g. `apps/my-app/.postcssrc.json`), not the
+workspace root:
 
 ```json
 {
@@ -44,26 +31,76 @@ Create a `.postcssrc.json` file in the project root:
 
 _(Do NOT create a `tailwind.config.js` file! Configuration in v4 is handled through CSS variables)._
 
-### 3. Import Tailwind CSS
+### 3. Import Tailwind CSS — and restrict what it scans
 
-In your global styles file (e.g., `src/styles.css`), add the standard v4 import:
+This is the step that differs in a monorepo, and getting it wrong is expensive.
+
+Tailwind v4 detects classes from source files automatically, but Angular's PostCSS plugin scans
+from the **workspace root**. In an Nx workspace that means every library gets scanned, and
+production CSS is bloated with utilities no one uses.
+
+Narrow the scan to the application, then declare the libraries it actually depends on:
 
 ```css
-@import 'tailwindcss';
+/* apps/my-app/src/styles.css */
+@import 'tailwindcss' source('./app');
+
+@source '../../../libs/ui';
+@source '../../../libs/shared';
 ```
 
 _(If using SCSS, use `@use 'tailwindcss';` instead)._
 
-### 4. Use Utility Classes
+### 4. Keep the source directives in sync
 
-You can now use Tailwind classes directly in your component templates:
+Maintaining that `@source` list by hand goes stale as dependencies change. `@juristr/nx-tailwind-sync`
+derives it from the project graph. Register it on the targets that build CSS:
+
+```json
+{
+  "targets": {
+    "build": {
+      "executor": "@angular/build:application",
+      "syncGenerators": ["@juristr/nx-tailwind-sync:source-directives"]
+    }
+  }
+}
+```
+
+`nx build` and `nx serve` then update `styles.css` with the correct directives.
+
+### 5. Use Utility Classes
 
 ```html
 <h1 class="text-3xl font-bold underline">Hello world!</h1>
 ```
 
+## Tailwind v3 (existing projects only)
+
+For a project still on v3, the same scanning concern applies through `content` globs — they must
+cover the project **and** the libraries it depends on:
+
+```javascript
+// apps/my-app/tailwind.config.js
+const {join} = require('path');
+
+module.exports = {
+  content: [
+    join(__dirname, 'src/**/*.{ts,html}'),
+    join(__dirname, '../../libs/**/*.{ts,html}'),
+  ],
+  theme: {extend: {}},
+  plugins: [],
+};
+```
+
+Prefer naming the specific libraries over globbing all of `libs/`.
+
 ## Summary for AI Agents
 
 - **Do not use `@tailwind base; @tailwind components; @tailwind utilities;`**. Use `@import 'tailwindcss';`.
-- **Do not create `tailwind.config.js`**. Configuration is managed directly in CSS via theme variables or using PostCSS configurations.
+- **Do not create `tailwind.config.js`** for v4. Configuration is managed directly in CSS via theme variables or using PostCSS configurations.
+- **Do not look for an Nx Tailwind generator** — there is none. Install manually.
+- **Always restrict scanning** with `source()` and `@source` in a monorepo, or prefer
+  `@juristr/nx-tailwind-sync` to derive them from the project graph.
 - Stick strictly to v4 syntax and workflows.

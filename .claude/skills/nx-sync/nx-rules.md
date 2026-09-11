@@ -32,6 +32,7 @@ corrected **here first**, then applied.
 | `/create-workspace` | https://nx.dev/docs/reference/create-nx-workspace |
 | `generators.json` | https://raw.githubusercontent.com/nrwl/nx/master/packages/angular/generators.json |
 | `executors.json` | https://raw.githubusercontent.com/nrwl/nx/master/packages/angular/executors.json |
+| `/kb-tailwind` | https://nx.dev/docs/kb/using-tailwind-css-with-angular-projects |
 
 The two JSON files are authoritative and should be preferred when a name is in doubt. The
 `/executors` documentation page renders only the `executors` section of `executors.json` and
@@ -316,6 +317,31 @@ through Vite when it uses an esbuild-based one.
 **Source:** `executors.json`, `generators.json` (authoritative), `/executors`, `/generators` —
 **Check:** the name exists in the JSON under either `executors` or `builders` and is not marked
 removed.
+
+## B11 — `ng add tailwindcss`
+
+**Trigger:** `ng add tailwindcss`, and `references/tailwind-css.md` as a whole.
+
+**Action:** do **not** translate this to `nx add tailwindcss`. Nx has no Tailwind generator —
+`@nx/angular:setup-tailwind` was removed and no other Nx package provides one — and `tailwindcss`
+ships no `ng-add` schematic for `nx add` to run. Describe the manual install instead, per the
+official Tailwind Angular guide.
+
+The part that actually matters in a monorepo, and that a verb substitution would have silently
+dropped: Tailwind v4 detects classes automatically, but Angular's PostCSS plugin scans from the
+**workspace root**, so every library is scanned and production CSS is bloated. Narrow it:
+
+```css
+@import 'tailwindcss' source('./app');
+@source '../../../libs/ui';
+```
+
+Mention `@juristr/nx-tailwind-sync` registered under `syncGenerators` on the build target, which
+derives those directives from the project graph instead of maintaining them by hand.
+
+**Source:** `/kb-tailwind`, `generators.json` — **Check:** no Tailwind generator is invoked
+anywhere; the output explains `source()`/`@source`.
+
 
 ---
 
