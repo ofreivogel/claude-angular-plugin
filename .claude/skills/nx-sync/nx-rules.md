@@ -3,8 +3,8 @@
 Reference used by the `/nx-sync` skill to translate the upstream `angular-developer` skill into
 its Nx counterpart under `nx/`.
 
-Upstream's `angular-new-app` skill is **not** forked — workspace creation is generic Nx territory
-(`create-nx-workspace`), which this fork deliberately leaves to the official Nx skills.
+Three parts: **A** the one-to-one replacements, **B** the cases with no direct Nx equivalent,
+**C** what is deliberately not forked at all.
 
 **This file is the only place that defines how a translation is done.** Keeping it here —
 rather than in the skill prompt — is what makes repeated syncs consistent.
@@ -291,27 +291,8 @@ To convert an existing Angular CLI workspace: `npx nx@latest init`, or
 **Source:** `/create-workspace`, `/introduction` — **Check:** every flag and preset named in the
 output appears in the create-nx-workspace reference.
 
-## B10 — `references/mcp.md` is not forked
 
-**Trigger:** the file itself.
-
-**Action:** **drop it.** It documents the MCP server bundled with the Angular CLI
-(`devserver.start` runs `ng serve`, `list_projects` reads `angular.json`) — a server this plugin
-deliberately does not ship, for a CLI that is usually absent in an Nx workspace.
-
-Translating it to describe the Nx MCP server was the obvious move and is still wrong: that
-server, its setup via `npx nx configure-ai-agents` and its tools are Nx's own territory, already
-covered by the official Nx skills. A copy here would only go stale.
-
-Note also that a verb substitution would be worse than dropping the file — it would turn a
-visible gap into a false claim about tools this plugin does not provide.
-
-Remove the `mcp.md` bullet from `SKILL.md` along with the file.
-
-**Source:** `/introduction` — **Check:** `references/mcp.md` absent from `nx/`; no dead link in
-`SKILL.md`.
-
-## B11 — test commands
+## B10 — test commands
 
 **Trigger:** `ng test`, and the command lines in the testing references.
 
@@ -338,25 +319,8 @@ with the default esbuild bundler the default is `vitest-angular`.
 
 **Source:** `/executors` — **Check:** every option named appears on the documented test executor.
 
-## B13 — `references/cli.md` is not forked
 
-**Trigger:** the file itself.
-
-**Action:** **drop it.** Once translated it described `nx g`, `nx build`, `nx serve`, `nx test`
-and `nx lint` — which is Nx's own territory, covered by the Nx MCP server and the official Nx
-skills (`nx-generate`, `nx-run-tasks`). Keeping it here would duplicate them and go stale.
-
-What must **not** be lost is the Angular-specific part, which no Nx skill covers: that Nx-owned
-generators take the path positionally, and that `@nx/angular` has no generator for services,
-guards, resolvers, interceptors or modules so those pass `@schematics/angular` through with
-`--project`. That guidance lives in the *Generating Angular Code* section of `SKILL.md`.
-
-Remove the `cli.md` bullet from `SKILL.md` along with the file.
-
-**Source:** — **Check:** `references/cli.md` absent from `nx/`; no dead link in `SKILL.md`; the
-positional-path and `@schematics/angular` fallback rules still present in `SKILL.md`.
-
-## B12 — package, generator and executor names in general
+## B11 — package, generator and executor names in general
 
 **Trigger:** any `@nx/*` name in the output.
 
@@ -375,3 +339,66 @@ through Vite when it uses an esbuild-based one.
 **Source:** `executors.json`, `generators.json` (authoritative), `/executors`, `/generators` —
 **Check:** the name exists in the JSON under either `executors` or `builders` and is not marked
 removed.
+
+---
+
+# Part C — what is not forked
+
+Three things upstream ships that this fork deliberately leaves out. They are listed as rules so a
+sync does not quietly translate them back in. For each, note **what must not be lost** — dropping
+a file is only correct if the Angular-specific part of it survives somewhere.
+
+## C1 — the `angular-new-app` skill
+
+**Trigger:** the skill directory itself.
+
+**Action:** **do not fork it.** Creating a workspace is `create-nx-workspace`, which is generic Nx
+territory and covered by the official Nx skills. The Nx plugin ships only `angular-developer`.
+
+**Not to be lost:** a one-line pointer at `npx create-nx-workspace@latest <name>
+--preset=angular-monorepo` in the *Creating Projects* section of `SKILL.md`, so the path stays
+discoverable without duplicating the guidance.
+
+**Check:** `nx/` contains no `angular-new-app/`; `nx/.claude-plugin/plugin.json` lists only
+`./angular-developer`.
+
+## C2 — `references/cli.md`
+
+**Trigger:** the file itself.
+
+**Action:** **drop it.** Once translated it described `nx g`, `nx build`, `nx serve`, `nx test`
+and `nx lint` — which is Nx's own territory, covered by the Nx MCP server and the official Nx
+skills (`nx-generate`, `nx-run-tasks`). Keeping it here would duplicate them and go stale.
+
+What must **not** be lost is the Angular-specific part, which no Nx skill covers: that Nx-owned
+generators take the path positionally, and that `@nx/angular` has no generator for services,
+guards, resolvers, interceptors or modules so those pass `@schematics/angular` through with
+`--project`. That guidance lives in the *Generating Angular Code* section of `SKILL.md`.
+
+**Not to be lost:** exactly that section — the positional-path rule and the `@schematics/angular`
+fallback (rules B7, B8). Without it the skill invents `@nx/angular:service`.
+
+Remove the `cli.md` bullet from `SKILL.md` along with the file.
+
+**Source:** — **Check:** `references/cli.md` absent from `nx/`; no dead link in `SKILL.md`; the
+positional-path and `@schematics/angular` fallback rules still present in `SKILL.md`.
+
+## C3 — `references/mcp.md`
+
+**Trigger:** the file itself.
+
+**Action:** **drop it.** It documents the MCP server bundled with the Angular CLI
+(`devserver.start` runs `ng serve`, `list_projects` reads `angular.json`) — a server this plugin
+deliberately does not ship, for a CLI that is usually absent in an Nx workspace.
+
+Translating it to describe the Nx MCP server was the obvious move and is still wrong: that
+server, its setup via `npx nx configure-ai-agents` and its tools are Nx's own territory, already
+covered by the official Nx skills. A copy here would only go stale.
+
+Note also that a verb substitution would be worse than dropping the file — it would turn a
+visible gap into a false claim about tools this plugin does not provide.
+
+Remove the `mcp.md` bullet from `SKILL.md` along with the file.
+
+**Source:** `/introduction` — **Check:** `references/mcp.md` absent from `nx/`; no dead link in
+`SKILL.md`.

@@ -26,15 +26,15 @@ caching, library architecture, module boundaries, generator discovery — is **o
 is covered by the Nx MCP server and the official Nx skills. Do not add such content, and do not
 let the fork grow beyond a translation of the upstream skill.
 
-Two things are deliberately **not** forked, and a sync must not reintroduce them:
+Three things are deliberately **not** forked, and a sync must not reintroduce them. **Part C** of
+nx-rules.md states each one with what must not be lost along with it:
 
-- Upstream's `angular-new-app` skill — creating a workspace is `create-nx-workspace`, generic Nx
+- the `angular-new-app` skill (C1) — workspace creation is `create-nx-workspace`, generic Nx
   territory. The Nx plugin ships only `angular-developer`.
-- `references/cli.md` — once translated it would describe `nx g`, `nx build`, `nx serve` and
+- `references/cli.md` (C2) — translated it would describe `nx g`, `nx build`, `nx serve` and
   `nx test`, which the Nx skills already cover. Its Angular-specific remainder lives in the
-  *Generating Angular Code* section of `SKILL.md` (rule B13).
-- `references/mcp.md` — the Nx MCP server, its setup and its tools are Nx's own territory
-  (rule B10).
+  *Generating Angular Code* section of the skill's `SKILL.md`.
+- `references/mcp.md` (C3) — the Nx MCP server, its setup and its tools are Nx's own territory.
 
 ## Procedure
 
@@ -84,6 +84,7 @@ Copy `angular-developer/` into `nx/`, then translate every file that mentions th
 - **Part A** of [nx-rules.md](nx-rules.md) for the one-to-one replacements.
 - **Part B** for everything that has no direct equivalent. These are instructions, not
   substitutions — the affected sections are rewritten, sometimes removed.
+- **Part C** lists what is not forked at all; do not copy those files.
 
 Two hard rules:
 
