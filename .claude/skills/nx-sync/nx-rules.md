@@ -339,8 +339,13 @@ dropped: Tailwind v4 detects classes automatically, but Angular's PostCSS plugin
 Mention `@juristr/nx-tailwind-sync` registered under `syncGenerators` on the build target, which
 derives those directives from the project graph instead of maintaining them by hand.
 
+The KB page also documents the v3 equivalent (`content` globs in `tailwind.config.js`). **Do not
+carry that over** — the file opens with an instruction to always use v4 and never to create a
+`tailwind.config.js`, so a v3 section would contradict its own guidance.
+
 **Source:** `/kb-tailwind`, `generators.json` — **Check:** no Tailwind generator is invoked
-anywhere; the output explains `source()`/`@source`.
+anywhere; the output explains `source()`/`@source`; no v3 / `tailwind.config.js` setup is
+described.
 
 
 ---

@@ -75,31 +75,10 @@ derives it from the project graph. Register it on the targets that build CSS:
 <h1 class="text-3xl font-bold underline">Hello world!</h1>
 ```
 
-## Tailwind v3 (existing projects only)
-
-For a project still on v3, the same scanning concern applies through `content` globs — they must
-cover the project **and** the libraries it depends on:
-
-```javascript
-// apps/my-app/tailwind.config.js
-const {join} = require('path');
-
-module.exports = {
-  content: [
-    join(__dirname, 'src/**/*.{ts,html}'),
-    join(__dirname, '../../libs/**/*.{ts,html}'),
-  ],
-  theme: {extend: {}},
-  plugins: [],
-};
-```
-
-Prefer naming the specific libraries over globbing all of `libs/`.
-
 ## Summary for AI Agents
 
 - **Do not use `@tailwind base; @tailwind components; @tailwind utilities;`**. Use `@import 'tailwindcss';`.
-- **Do not create `tailwind.config.js`** for v4. Configuration is managed directly in CSS via theme variables or using PostCSS configurations.
+- **Do not create `tailwind.config.js`**. Configuration is managed directly in CSS via theme variables or using PostCSS configurations.
 - **Do not look for an Nx Tailwind generator** — there is none. Install manually.
 - **Always restrict scanning** with `source()` and `@source` in a monorepo, or prefer
   `@juristr/nx-tailwind-sync` to derive them from the project graph.
