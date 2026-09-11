@@ -1,6 +1,6 @@
 ---
 name: angular-developer
-description: For Nx workspaces only (an nx.json at the workspace root). Generates Angular code and provides architectural guidance using the Nx CLI. Trigger when creating projects, components, services, or HTTP communication, or for best practices on reactivity (signals, linkedSignal, resource, httpResource), forms, dependency injection, routing, SSR, accessibility (ARIA), animations, styling (component styles, Tailwind CSS), testing, naming conventions, or Nx tooling.
+description: For Nx workspaces only (an nx.json at the workspace root). Generates Angular code and provides architectural guidance. Trigger when creating projects, components, services, or HTTP communication, or for best practices on reactivity (signals, linkedSignal, resource, httpResource), forms, dependency injection, routing, SSR, accessibility (ARIA), animations, styling (component styles, Tailwind CSS), testing, naming conventions, or Nx tooling.
 license: MIT
 metadata:
   author: Copyright 2026 Google LLC
@@ -15,7 +15,7 @@ metadata:
 
 2. When generating code, follow Angular's style guide and best practices for maintainability and performance. Use the Nx CLI for scaffolding components, services, directives, pipes, and routes to ensure consistency. Never use `ng` in an Nx workspace — Nx runs Angular's builders and schematics itself, and there is no `angular.json` for the Angular CLI to read.
 
-3. Once you finish generating code, run the build to ensure there are no build errors: `nx build <project>`, or `nx affected -t build` to catch breakage in dependent projects. If there are errors, analyze the error messages and fix them before proceeding. Do not skip this step, as it is critical for ensuring the generated code is correct and functional.
+3. Once you finish generating code, run the build to ensure there are no build errors: `nx build <project>`. If there are errors, analyze the error messages and fix them before proceeding. Do not skip this step, as it is critical for ensuring the generated code is correct and functional.
 
 ## Creating Projects
 
@@ -63,9 +63,10 @@ nx g @schematics/angular:resolver user --project=my-app
 nx g @schematics/angular:environments --project=my-app
 ```
 
-This applies to `@nx/angular` specifically, **not** to every Nx generator — other Nx plugins do
-take `--project` (`nx g @nx/playwright:configuration --project=my-app-e2e`). Check the generator's
-own options rather than generalising from this rule.
+The positional-path form applies to `@nx/angular` specifically, **not** to every Nx generator —
+other Nx plugins do take `--project`. Check the generator's own options with
+`nx g <plugin>:<generator> --help`, or ask the Nx MCP server, rather than generalising from this
+rule.
 
 Never invent an `@nx/angular:<name>`. Run `nx list @nx/angular` to see what exists, or ask the
 Nx MCP server.
@@ -164,7 +165,10 @@ When writing or updating tests, consult the following references based on the ta
 - **Fundamentals**: Best practices for unit testing (Vitest), async patterns, and `TestBed`. Read [testing-fundamentals.md](references/testing-fundamentals.md)
 - **Component Harnesses**: Standard patterns for robust component interaction. Read [component-harnesses.md](references/component-harnesses.md)
 - **Router Testing**: Using `RouterTestingHarness` for reliable navigation tests. Read [router-testing.md](references/router-testing.md)
-- **End-to-End (E2E) Testing**: Setting up and running E2E tests. Read [e2e-testing.md](references/e2e-testing.md)
+
+End-to-end testing is not covered here. In an Nx workspace the e2e runner is chosen when the
+application is generated (`--e2eTestRunner`), and the runner's own skills — `@nx/playwright`,
+Playwright's — cover setting it up and running it.
 
 ## Tooling
 

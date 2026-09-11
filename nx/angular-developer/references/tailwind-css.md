@@ -56,10 +56,9 @@ listed alongside your `.scss` styles) so `source()` and `@source` remain availab
 ### 4. Keep the source directives in sync
 
 Maintaining that `@source` list by hand goes stale as dependencies change. `@juristr/nx-tailwind-sync`
-derives it from the project graph. Register it on the targets that build CSS:
-
-Register it on **every** target that produces CSS — `build` alone means `nx serve` will not
-regenerate the directives, and a newly added library's classes silently fail to render in dev:
+derives it from the project graph. Register it on **every** target that produces CSS — the `build`
+target alone means the `serve` target will not regenerate the directives, and a newly added
+library's classes silently fail to render in dev:
 
 ```json
 {

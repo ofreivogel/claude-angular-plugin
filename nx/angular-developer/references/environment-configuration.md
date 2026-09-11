@@ -80,7 +80,7 @@ generator wrote — or add it yourself if the target was inferred:
 }
 ```
 
-The builder then swaps the file based on the configuration selected by
+The executor then swaps the file based on the configuration selected by
 `nx build my-app --configuration=development`.
 
 If you need a development-mode check, use `isDevMode()` from `@angular/core` instead of relying on a manually maintained `production` flag.
