@@ -1,7 +1,6 @@
 ---
 name: angular-cli-to-nx
 description: Konvertiert für angular bereitgestellte skill basierend auf Angular CLI für nx workspaces.
-allowed-tools: Read, Write, Edit, Grep, Glob, WebFetch, Bash
 ---
 
 ## Verification sources nx
@@ -30,10 +29,10 @@ skip content concerning:
 ## Procedure
 
 1. Wenn nicht angegeben, Frage welcher skill transformiert werden soll
-2. Kopiere den Inhalt des orginal skill nach nx
+2. Kopiere den Inhalt des original skill nach nx
 3. suche nach allen Angular CLI betroffenen Abschnitte im Skill file und den dazugehörigen Dateien wie Referenzen etc
 4. Arbeite alle Abschnitte durch: Ersetzte angular CLI spezifische Befehle und Anweisungen mit passenden nx/angular befehlen. Entferne Inhalte die abgegrenzt sind. Verifiziere jede Änderung gegen die aktuelle API und Dokumentation des nx angular Plugin. (siehe [#Verification sources nx])
-5. Prüfe deine Änderungen gegenüber der vorangehenden Version. Was nicht  angular CLI spezifisch ist sollte erhalten bleiben, wenn es "upstream" vorhanden ist.
+5. Prüfe deine Änderungen gegenüber der vorangehenden Version. Was nicht angular CLI spezifisch ist sollte erhalten bleiben, wenn es "upstream" vorhanden ist oder im orginal skill.
 6. verwende /code-review und behebe die Findings.
 7. Stoppe ohne commit
 

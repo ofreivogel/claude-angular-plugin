@@ -3,7 +3,7 @@ name: angular-developer
 description: For Nx workspaces only (an nx.json at the workspace root). Generates Angular code and provides architectural guidance. Trigger when creating components, services, or HTTP communication, or for best practices on reactivity (signals, linkedSignal, resource, httpResource), forms, dependency injection, routing, SSR, accessibility (ARIA), animations, styling (component styles, Tailwind CSS), testing, naming conventions, or Nx tooling.
 license: MIT
 metadata:
-  author: Copyright 2026 Google LLC
+  author: Copyright 2026 Google LLC, Oliver Freivogel
   version: '1.0'
 ---
 
