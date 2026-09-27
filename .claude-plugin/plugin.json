@@ -1,6 +1,6 @@
 {
   "name": "angular",
-  "version": "22.1.0",
+  "version": "22.2.0",
   "description": "Angular development plugin: angular-developer skill, subagent and Angular CLI MCP",
   "author": { "name": "Oliver Freivogel" },
   "license": "MIT",
